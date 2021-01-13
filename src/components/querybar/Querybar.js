@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef} from 'react';
 import {
   IconButton, AppBar, Typography, InputBase, Toolbar, Tooltip, Collapse,
   FormControl, FormControlLabel, FormLabel, Radio, NativeSelect, InputLabel
@@ -97,9 +97,10 @@ const BootstrapInput = withStyles((theme) => ({
 
 const Querybar = (props) => {
 
-  debugger;
   const classes = useStyles();
-  const data = []
+  const data = props.data || [];
+  const [ displayedData, setDisplayedData] = useState(props.data || []);
+  const displayedDataRef = useRef();
   const [dataQuery, setDataQuery] = useState([]);
   const [filter, setFilter] = useState('all');
   const [sort, setSort] = useState('sortera');
@@ -108,7 +109,6 @@ const Querybar = (props) => {
   const [collapseFilter, setCollapseFilter] = useState(false);
 
   const handleQuery = (e, type) => {
-    debugger;
     const query = e.target !== undefined ? e.target.value : e;
     let test = data;
     if (data.length > 0) {
@@ -126,37 +126,53 @@ const Querybar = (props) => {
         test = handleSearch(query, test);
       }
       setDataQuery(test);
-      props.onDataChanged(test);
+      setDisplayedData(test);
     }
 
   };
 
   const handleSort = (param, data) => {
-    let result;
+    if(data.asOwnProperty(param.name)) {
+      switch(param.type) {
+        
+      }
+    }
+    return data;
 
   };
 
   const handleFilter = (param, data) => {
-    let result;
+   return data;
 
 
   };
 
   const handleSearch = (param, data) => {
+    let result;
     const searchString = param.toString().toLowerCase().trim();
     if (searchString !== "") {
-      data = data.filter((item) => {
-        return item.title.toLowerCase().includes(searchString);
-      });
+      result = data.filter((obj) => {
+        return Object.keys(obj).some((key) => {
+            if (obj[key] !== null) {
+                return obj[key].toString().toLowerCase().includes(searchString);
+            }
+        })
+    });
       setSearch(searchString);
+      return result;
     }
     return data;
   };
-  debugger;
+ 
+
+  
 
   useEffect(() => {
-
-  }, [sortOptions]);
+    if(JSON.stringify(displayedData) !== JSON.stringify(displayedDataRef.current)) {
+      displayedData.current = displayedData;
+      props.setData(displayedData);
+    }
+  }, [props, displayedData, sortOptions]);
 
   return (
     <div className={classes.root}>

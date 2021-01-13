@@ -1,10 +1,12 @@
 import './App.css';
-import Example from './components/examples/example';
+import Navbar from './components/Navbar/Navbar';
+import Footer from './components/Footer/Footer';
 
 const App = ()  => {
   return (
     <div className="App">
-      <Example />
+      <Navbar />
+      <Footer />
     </div>
   );
 }

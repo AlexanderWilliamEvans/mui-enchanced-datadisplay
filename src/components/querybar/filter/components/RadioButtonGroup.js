@@ -28,12 +28,16 @@ const RadioButtonGroup = (props) => {
 
     return (
         <FormControl component="fieldset" className={classes.formControl}>
-            <FormLabel component="legend">Status</FormLabel>
+            <FormLabel component="legend">{props.formLabel}</FormLabel>
             <Divider />
             <RadioGroup aria-label="published" name="published" value={selectedValue} onChange={(e) => handleFilter(e)}>
-                <FormControlLabel value="all" control={<Radio color="primary" />} label="Alla" />
-                <FormControlLabel value="published" control={<Radio color="primary" />} label="Publicerad" />
-                <FormControlLabel value="notPublished" control={<Radio color="primary" />} label="Inte Publicerad" />
+                {
+                    values.map((value) => {
+                        return (
+                            <FormControlLabel value={value} control={<Radio color="primary" />} label={value} />
+                        )
+                    })
+                }
             </RadioGroup>
         </FormControl>
     );

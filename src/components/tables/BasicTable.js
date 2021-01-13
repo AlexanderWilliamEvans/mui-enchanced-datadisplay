@@ -25,8 +25,11 @@ export const BasicTable = (props) => {
   const [rows, setRows] = useState(props.rows || []);
 
   useEffect( () => {
-
-  }, [rows]);
+    if(JSON.stringify(props.rows) !== JSON.stringify(rows)) {
+      const newState = JSON.parse(JSON.stringify(props.rows))
+      setRows(newState);
+    }
+  }, [props.rows, rows]);
 
   return (
     <TableContainer component={Paper} className={classes.container}>

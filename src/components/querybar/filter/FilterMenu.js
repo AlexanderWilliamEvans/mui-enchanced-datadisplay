@@ -1,24 +1,19 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
     makeStyles,
-    withStyles,
     useTheme,
     Grid,
     RadioGroup,
     Radio,
     InputLabel,
-    Slider,
     Typography,
     TextField,
     FormLabel,
     FormControl,
     FormControlLabel,
     Divider,
-    Chip,
-    MenuItem,
-    Input,
-    Select
 } from '@material-ui/core';
+import RadioButtonGroup from './components/RadioButtonGroup';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -84,65 +79,7 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-const MenuProps = {
-    PaperProps: {
-        style: {
-            maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-            width: 250,
-        },
-    },
-};
 
-const RangeSlider = withStyles({
-    root: {
-        color: 'primary',
-        height: 2,
-        padding: '15px 0',
-    },
-    thumb: {
-        height: 25,
-        width: 25,
-        backgroundColor: '#fff',
-        boxShadow: '0 3px 1px rgba(0,0,0,0.1),0 4px 8px rgba(0,0,0,0.13),0 0 0 1px rgba(0,0,0,0.02)',
-        marginTop: -14,
-        marginLeft: -14,
-        '&:focus, &:hover, &$active': {
-            boxShadow: '0 3px 1px rgba(0,0,0,0.1),0 4px 8px rgba(0,0,0,0.3),0 0 0 1px rgba(0,0,0,0.02)',
-            '@media (hover: none)': {
-                boxShadow: '0 3px 1px rgba(0,0,0,0.1),0 4px 8px rgba(0,0,0,0.13),0 0 0 1px rgba(0,0,0,0.02)',
-            },
-        },
-    },
-    active: {},
-    valueLabel: {
-        left: 'calc(-50% + 12px)',
-        top: -22,
-        '& *': {
-            background: 'transparent',
-            color: '#000',
-        },
-    },
-    track: {
-        height: 2,
-    },
-    rail: {
-        height: 2,
-        opacity: 0.5,
-        backgroundColor: '#bfbfbf',
-    },
-    mark: {
-        backgroundColor: '#bfbfbf',
-        height: 8,
-        width: 1,
-        marginTop: -3,
-    },
-    markActive: {
-        opacity: 1,
-        backgroundColor: 'currentColor',
-    },
-})(Slider);
 
 const FilterMenu = (props) => {
     const theme = useTheme();
@@ -176,6 +113,7 @@ const FilterMenu = (props) => {
         };
     };
 
+    
 
     const filterPublished = (e) => {
         debugger;
@@ -238,6 +176,22 @@ const FilterMenu = (props) => {
     
       };
 
+      const addFilters = (element) => {
+        switch (element.type) {
+            case 'radiogroup':
+            return (
+              <RadioButtonGroup values = {element.values}/>
+            )
+            case 'datepicker':
+                return true;
+            case 'chip':
+                return true;
+            default:
+                return null;
+        }
+    
+      };
+
       const removeChip = (e) => {
 
       };
@@ -265,11 +219,9 @@ const FilterMenu = (props) => {
                     <FormControl component="fieldset" className={classes.formControl}>
                         <FormLabel component="legend">Status</FormLabel>
                         <Divider />
-                        <RadioGroup aria-label="published" name="published" value={published} onChange={(e) => { filterPublished(e) }}>
-                            <FormControlLabel value="all" control={<Radio color="primary" />} label="Alla" />
-                            <FormControlLabel value="published" control={<Radio color="primary" />} label="Publicerad" />
-                            <FormControlLabel value="notPublished" control={<Radio color="primary" />} label="Inte Publicerad" />
-                        </RadioGroup>
+                        {
+
+                        }
                     </FormControl>
                 </Grid>
                 <Grid item xs={6}>
