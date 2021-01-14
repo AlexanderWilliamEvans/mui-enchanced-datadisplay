@@ -3,14 +3,11 @@ import {
     makeStyles,
     useTheme,
     Grid,
-    RadioGroup,
-    Radio,
     InputLabel,
     Typography,
     TextField,
     FormLabel,
     FormControl,
-    FormControlLabel,
     Divider,
 } from '@material-ui/core';
 import RadioButtonGroup from './components/RadioButtonGroup';
@@ -82,8 +79,10 @@ const useStyles = makeStyles((theme) => ({
 
 
 const FilterMenu = (props) => {
+    debugger;
     const theme = useTheme();
     const classes = useStyles();
+    const [filters, setFilters] = useState(props.filters || []);
     const [published, setPublished] = useState('all');
     const [creators, setCreators ] = useState([{name: 'SOKIGO/ALEV', id: 66}, {name: 'SOKIGO/HEAN', id: 662}, {name: 'SOKIGO/FRLU', id: 3}]);
     const [selectedCreators, setSelectedCreators] = useState(creators);
@@ -176,22 +175,6 @@ const FilterMenu = (props) => {
     
       };
 
-      const addFilters = (element) => {
-        switch (element.type) {
-            case 'radiogroup':
-            return (
-              <RadioButtonGroup values = {element.values}/>
-            )
-            case 'datepicker':
-                return true;
-            case 'chip':
-                return true;
-            default:
-                return null;
-        }
-    
-      };
-
       const removeChip = (e) => {
 
       };
@@ -206,21 +189,34 @@ const FilterMenu = (props) => {
     }, [props, activeFilters]);
 
     useEffect(() => {
+        
         if (JSON.stringify(activeFilterRef.current) !== JSON.stringify(activeFilters)) {
             handleQuery(activeFilters, 'filter');
             activeFilterRef.current = activeFilters;
         }
-    }, [activeFilters, handleQuery]);
+    }, [filters, activeFilters, handleQuery]);
 
     return (
         <div className={classes.filterContainer}>
             <Grid container spacing={3}>
                 <Grid item xs={6}>
                     <FormControl component="fieldset" className={classes.formControl}>
-                        <FormLabel component="legend">Status</FormLabel>
-                        <Divider />
                         {
-
+                            filters.length > 0 ? filters.map((filter) => {
+                                debugger;
+                                switch (filter.type) {
+                                    case 'radio':
+                                    return (
+                                      <RadioButtonGroup data = {filter.data} handleQuery={props.handleQuery}/>
+                                    )
+                                    case 'datepicker':
+                                        return true;
+                                    case 'chip':
+                                        return true;
+                                    default:
+                                        return null;
+                                }
+                            }) : null
                         }
                     </FormControl>
                 </Grid>

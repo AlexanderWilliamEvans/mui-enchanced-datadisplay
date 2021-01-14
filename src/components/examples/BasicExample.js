@@ -6,7 +6,7 @@ import settings from './settings';
 
 
 
-const placeholder = 'Sök bland användare...';
+const placeholder = 'Search...';
 
 const useStyles = makeStyles({
     container: {
@@ -34,10 +34,12 @@ const BasicExample = () => {
             <Querybar
                 sort={settings.sort}
                 data={settings.data}
-                filter={settings.filter}
+                filters={settings.filters}
                 setData={setRows}
                 placeholder={placeholder}
-                useSort={true} />
+                useSort={settings.useSort || true} 
+                showSearchResultText={settings.showSearchResultText || true}
+                />
             <BasicTable
                 rows={rows}
                 setRows={setRows} />

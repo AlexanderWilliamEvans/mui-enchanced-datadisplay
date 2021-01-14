@@ -14,8 +14,8 @@ const useStyles = makeStyles({
   },
 });
 
-const createData = (name, age, year) => {
-  return { name, age, year };
+const createData = (name, gender, age, year) => {
+  return { name, gender, age, year };
 }
 
 
@@ -37,6 +37,7 @@ export const BasicTable = (props) => {
         <TableHead>
           <TableRow>
             <TableCell>Name</TableCell>
+            <TableCell align="right">Gender</TableCell>
             <TableCell align="right">Age</TableCell>
             <TableCell align="right">Year</TableCell>
           </TableRow>
@@ -47,6 +48,7 @@ export const BasicTable = (props) => {
               <TableCell component="th" scope="row">
                 {row.name}
               </TableCell>
+              <TableCell align="right">{row.gender}</TableCell>
               <TableCell align="right">{row.age}</TableCell>
               <TableCell align="right">{row.year}</TableCell>
             </TableRow>

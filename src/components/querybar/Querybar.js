@@ -1,7 +1,7 @@
-import React, { useEffect, useState, useRef} from 'react';
+import React, { Fragment, useEffect, useState, useRef } from 'react';
 import {
   IconButton, AppBar, Typography, InputBase, Toolbar, Tooltip, Collapse,
-  FormControl, FormControlLabel, FormLabel, Radio, NativeSelect, InputLabel
+  FormControl, FormControlLabel, FormLabel, Radio, NativeSelect, InputLabel, Divider
 } from '@material-ui/core';
 import { fade, makeStyles, withStyles } from '@material-ui/core/styles';
 import FilterListIcon from '@material-ui/icons/FilterList';
@@ -99,20 +99,22 @@ const Querybar = (props) => {
 
   const classes = useStyles();
   const data = props.data || [];
-  const [ displayedData, setDisplayedData] = useState(props.data || []);
+  const [displayedData, setDisplayedData] = useState(props.data || []);
   const displayedDataRef = useRef();
   const [dataQuery, setDataQuery] = useState([]);
   const [filter, setFilter] = useState('all');
-  const [sort, setSort] = useState('sortera');
+  const [sort, setSort] = useState(props.data[1].name || 'sortera');
   const [sortOptions, setSortOptions] = useState(props.sort || []);
   const [search, setSearch] = useState('');
   const [collapseFilter, setCollapseFilter] = useState(false);
 
   const handleQuery = (e, type) => {
     const query = e.target !== undefined ? e.target.value : e;
-    let test = data;
+    let test = JSON.parse(JSON.stringify(data));
     if (data.length > 0) {
-      test = handleSort(query, test);
+      if (type === 'sort' || sort.length > 0) {
+        test = handleSort(JSON.parse(query), test);
+      }
 
       if (type === 'filter' || filter !== 'all') {
         for (let i = 0; i < query.length; i++) {
@@ -122,7 +124,7 @@ const Querybar = (props) => {
         }
       }
 
-      if (type === 'search') {
+      if (type === 'search' || search.length > 0) {
         test = handleSearch(query, test);
       }
       setDataQuery(test);
@@ -132,9 +134,34 @@ const Querybar = (props) => {
   };
 
   const handleSort = (param, data) => {
-    if(data.asOwnProperty(param.name)) {
-      switch(param.type) {
-        
+    let result;
+    if (data[0].hasOwnProperty(param.key)) {
+      switch (param.type.toLowerCase()) {
+        case 'string':
+          result = data.sort((a, b) => {
+            return a[param.key].localeCompare(b[param.key], 'sv', { ignorePunctuation: true })
+          });
+          result = param.order.toLowerCase() === 'asc' ? result : result.reverse();
+          setSort(param);
+          console.log(JSON.stringify(result));
+          return result;
+        case 'int':
+          result = data.sort((a, b) => {
+            return a[param.key] - b[param.key];
+          });
+          result = param.order.toLowerCase() === 'asc' ? result : result.reverse();
+          setSort(param);
+          console.log(JSON.stringify(result));
+          return result;
+        case 'date':
+          result = data.sort((a, b) => {
+            return new Date(a[param.key]).getTime() - new Date(b[param.key]).getTime();
+          });
+          result = param.order.toLowerCase() === 'asc' ? result : result.reverse();
+          setSort(param);
+          return result;
+        default:
+          return data;
       }
     }
     return data;
@@ -142,7 +169,31 @@ const Querybar = (props) => {
   };
 
   const handleFilter = (param, data) => {
-   return data;
+    let result;
+    debugger;
+    if (data[0].hasOwnProperty(param.name)) {
+      switch (param.type) {
+        case 'list':
+          result = data.filter((item) =>{
+            return param.filter.indexOf(item[param.name]) !== -1;
+          });
+          return result;
+        case 'bool':
+          result = data.filter((item) => {
+            return item.published
+          });
+          return result;
+
+        case 'range':
+          result = data.filter((item) => {
+           return item.date <= param.filter.end && item.date >= param.filter.start;
+          });
+          return result;
+        default:
+          return data;
+      }
+    }
+    return data;
 
 
   };
@@ -153,80 +204,96 @@ const Querybar = (props) => {
     if (searchString !== "") {
       result = data.filter((obj) => {
         return Object.keys(obj).some((key) => {
-            if (obj[key] !== null) {
-                return obj[key].toString().toLowerCase().includes(searchString);
-            }
+          if (obj[key] !== null) {
+            return obj[key].toString().toLowerCase().includes(searchString);
+          }
         })
-    });
+      });
       setSearch(searchString);
       return result;
     }
     return data;
   };
- 
 
-  
+
+
 
   useEffect(() => {
-    if(JSON.stringify(displayedData) !== JSON.stringify(displayedDataRef.current)) {
+    if (JSON.stringify(displayedData) !== JSON.stringify(displayedDataRef.current)) {
       displayedData.current = displayedData;
       props.setData(displayedData);
     }
-  }, [props, displayedData, sortOptions]);
+  }, [props, displayedData, sortOptions, sort]);
 
   return (
-    <div className={classes.root}>
-      <AppBar position="static">
-        <Toolbar>
-          <Tooltip title="Filtrera">
-            <IconButton
-              edge="start"
-              className={classes.menuButton}
-              color="inherit"
-              aria-label="filtrera"
-              onClick={() => setCollapseFilter(!collapseFilter)}
-            >
-              <FilterListIcon />
-            </IconButton>
-          </Tooltip>
-          <FormControl className={classes.margin}>
-            <InputLabel htmlFor="demo-customized-select-native"></InputLabel>
-            <NativeSelect
-              id="demo-customized-select-native"
-              value={sort}
-              onChange={(e) => handleQuery(e, 'sort')}
-              input={<BootstrapInput />}
-            >
-              {
-                sortOptions.map(sortOption => {
-                  return (
-                    <option value={sortOption.name}>{sortOption.name}</option>
-                  );
-                })
-              }
-            </NativeSelect>
-          </FormControl>
-          <div className={classes.filler} />
-          <div className={classes.search}>
-            <div className={classes.searchIcon}>
-              <SearchIcon />
+    <Fragment>
+      <div className={classes.root}>
+        <AppBar position="static">
+          <Toolbar>
+            <Tooltip title="Filtrera">
+              <IconButton
+                edge="start"
+                className={classes.menuButton}
+                color="inherit"
+                aria-label="filtrera"
+                onClick={() => setCollapseFilter(!collapseFilter)}
+              >
+                <FilterListIcon />
+              </IconButton>
+            </Tooltip>
+            {
+              props.useSort ?
+                <FormControl className={classes.margin}>
+                  <InputLabel htmlFor="demo-customized-select-native"></InputLabel>
+                  <NativeSelect
+                    id="demo-customized-select-native"
+                    value={sort}
+                    onChange={(e) => handleQuery(e, 'sort')}
+                    input={<BootstrapInput />}
+                  >
+                    {
+                      sortOptions.map(sortOption => {
+                        return (
+                          <option value={JSON.stringify(sortOption)}>{sortOption.name}</option>
+                        );
+                      })
+                    }
+                  </NativeSelect>
+                </FormControl>
+                : null
+            }
+            <div className={classes.filler} />
+            <div className={classes.search}>
+              <div className={classes.searchIcon}>
+                <SearchIcon />
+              </div>
+              <InputBase
+                onChange={(e) => handleQuery(e, 'search')}
+                placeholder={props.placeholder || 'Sök...'}
+                classes={{
+                  root: classes.inputRoot,
+                  input: classes.inputInput,
+                }}
+                inputProps={{ 'aria-label': 'sök på namn' }}
+              />
             </div>
-            <InputBase
-              onChange={(e) => handleQuery(e, 'search')}
-              placeholder={props.placeholder || 'Sök...'}
-              classes={{
-                root: classes.inputRoot,
-                input: classes.inputInput,
-              }}
-              inputProps={{ 'aria-label': 'sök på namn' }}
-            />
-          </div>
-        </Toolbar>
-      </AppBar>
-      <Collapse in={collapseFilter}>
-        <FilterMenu handleQuery={handleQuery} authors={props.authors} date={props.date} />
-      </Collapse>
-    </div>
+          </Toolbar>
+        </AppBar>
+        <Collapse in={collapseFilter}>
+          <FilterMenu handleQuery={handleQuery} authors={props.authors} date={props.date} filters={props.filters} />
+        </Collapse>
+      </div>
+      <br />
+      {
+        data.length && props.showSearchResultText > 0 ?
+          (
+            <Typography variant="body2"><b>Visar {displayedData.length} av {data.length} projekt</b></Typography>
+          ) :
+          (null)
+      }
+      <br />
+      <Divider />
+    </Fragment>
   );
 
 };
