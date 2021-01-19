@@ -15,7 +15,7 @@ const useStyles = makeStyles({
 
 const RadioButtonGroup = (props) => {
     const classes = useStyles();
-    const [label, setLabel ] = useState(props.data.label || '' );
+    const [label, setLabel ] = useState(props.label || '' );
     const [type, setType ] = useState(props.data.type || null);
     const [name, setName] = useState(props.data.name || '');
     const [values, setValues] = useState(props.data.values || []);

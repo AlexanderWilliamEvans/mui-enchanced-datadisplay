@@ -18,7 +18,8 @@ const sort = [
 ];
 const filters = [
     { name: 'gender', key: 'gender', label: 'Kön', type: 'radio', data: {type: 'list', values:[{value:'male', label: 'Male'}, {value: 'female', label: 'Female'}, {value: 'other', label: 'Other'}]} },
-  //  { name: 'Age', label: 'Ålder', type: 'range', values: [1, 4] },
+    { name: 'Age', label: 'Ålder', type: 'range', data: {values: [1, 4]}},
+    { name: 'Year', label: 'År', type: 'range', data: {values: [1900, 2030]}},
   //  { name: 'Created', label: 'Skapad', type: 'dateRange', values: [1, 2] },
   //  { name: 'Categories', label: 'Kategorier', type: 'select', values: [] }
 ];

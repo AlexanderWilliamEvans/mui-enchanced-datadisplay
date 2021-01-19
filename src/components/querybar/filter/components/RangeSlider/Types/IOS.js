@@ -13,7 +13,7 @@ const MenuProps = {
     },
 };
 
-const RangeSlider = withStyles({
+const IOSSlider = withStyles({
     root: {
         color: 'primary',
         height: 2,
@@ -62,4 +62,4 @@ const RangeSlider = withStyles({
     },
 })(Slider);
 
-export default RangeSlider;
+export default IOSSlider;
