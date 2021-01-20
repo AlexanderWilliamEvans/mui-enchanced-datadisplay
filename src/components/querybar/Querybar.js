@@ -102,8 +102,8 @@ const Querybar = (props) => {
   const [displayedData, setDisplayedData] = useState(props.data || []);
   const displayedDataRef = useRef();
   const [dataQuery, setDataQuery] = useState([]);
-  const [filter, setFilter] = useState('all');
-  const [sort, setSort] = useState(props.data[1].name || 'sortera');
+  const [filter, setFilter] = useState([]);
+  const [sort, setSort] = useState(props.sort[0].name || 'sortera');
   const [sortOptions, setSortOptions] = useState(props.sort || []);
   const [search, setSearch] = useState('');
   const [collapseFilter, setCollapseFilter] = useState(false);
@@ -111,21 +111,28 @@ const Querybar = (props) => {
   const handleQuery = (e, type) => {
     const query = e.target !== undefined ? e.target.value : e;
     let test = JSON.parse(JSON.stringify(data));
+    debugger;
     if (data.length > 0) {
       if (type === 'sort' || sort.length > 0) {
-        test = handleSort(JSON.parse(query), test);
+        test = handleSort(type === 'sort' ? JSON.parse(query) : sort, test);
       }
 
-      if (type === 'filter' || filter !== 'all') {
-        for (let i = 0; i < query.length; i++) {
-          if (query[i].active) {
+      if (type === 'filter' || filter.length > 0) {
+        if(type === 'filter') {
+          for (let i = 0; i < query.length; i++) {     
             test = handleFilter(query[i], test);
-          }
+        }
+        setFilter(query);
+        }
+        else {
+          for (let i = 0; i < filter.length; i++) {     
+            test = handleFilter(filter[i], test);
+        }
         }
       }
 
       if (type === 'search' || search.length > 0) {
-        test = handleSearch(query, test);
+        test = handleSearch(type === 'search' ?  query : search, test);
       }
       setDataQuery(test);
       setDisplayedData(test);

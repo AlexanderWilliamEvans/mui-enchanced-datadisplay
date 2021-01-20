@@ -16,15 +16,15 @@ const useStyles = makeStyles({
 const RadioButtonGroup = (props) => {
     const classes = useStyles();
     const [label, setLabel ] = useState(props.label || '' );
-    const [type, setType ] = useState(props.data.type || null);
-    const [name, setName] = useState(props.data.name || '');
+    const [type, setType ] = useState(props.type || null);
+    const [name, setName] = useState(props.name || '');
     const [values, setValues] = useState(props.data.values || []);
     const [selectedValue, setSelectedValue] = useState(values[0].value || null);
 
     const handleFilter = (e) => {
         setSelectedValue(e.target.value);
         const query = {value: e.target.value, type, name}
-        props.handleQuery(query, 'filter');
+        props.handleFilter(query, 'filter');
     };
 
     useEffect(() => {

@@ -10,8 +10,10 @@ import {
     FormControl,
     Divider,
 } from '@material-ui/core';
-import RadioButtonGroup from './components/RadioButtonGroup';
+import RadioButtonGroup from './components/RadioButtonGroup/RadioButtonGroup';
 import RangeSlider from './components/RangeSlider/RangeSlider';
+import DateRange from './components/DateRange/DateRange';
+import Switcher from './components/Switcher/Switcher';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -92,31 +94,20 @@ const FilterMenu = (props) => {
         end: new Date().toISOString().slice(0, 10)
     });
     const [activeFilters, setActiveFilters] = useState([
-        { name: 'status', active: false, filter: {} },
-        { name: 'created', active: false, filter: {} },
-        { name: 'updated', active: false, filter: {} },
-        { name: 'createdBy', active: false, filter: {} },
+      /*  {name: 'gender', type: 'radio', filter: ['male', 'female']},
+        {name:'year', type: 'range', filter: [1920, 1970]},
+        {name: 'born', type: 'dateRange', filter: ['2010-07-10', '2012-04-12']}*/
     ]);
     const activeFilterRef = useRef(activeFilters);
 
-
-    const getStyles = (name, personName, theme) => {
-        return {
-            fontWeight:
-                personName.indexOf(name) === -1
-                    ? theme.typography.fontWeightRegular
-                    : theme.typography.fontWeightMedium,
-        };
-    };
-
-
-
-    const filterPublished = (e) => {
-        debugger;
-        setPublished(e.target.value);
-        const data = { name: 'status', active: true, filter: e.target.value };
+    const handleFilter = (filter) => {
         let newState = [...activeFilters];
-        newState[0] = data;
+        const index = newState.findIndex(x => x.name === filter.name);
+        if(index !== -1) {
+            newState[index] = filter;
+        } else {
+            newState.push(filter);
+        }
         setActiveFilters(newState);
     };
 
@@ -172,13 +163,6 @@ const FilterMenu = (props) => {
 
     };
 
-    const removeChip = (e) => {
-
-    };
-
-    const filterCreatedBy = () => {
-
-    };
 
 
     const handleQuery = useCallback(() => {
@@ -195,39 +179,45 @@ const FilterMenu = (props) => {
 
     return (
         <div className={classes.filterContainer}>
-            <Grid container spacing={3}>
-                <Grid item xs={6}>
-                    <FormControl component="fieldset" className={classes.formControl}>
-                        {
-                            filters.length > 0 ? filters.map((filter) => {
-                                switch (filter.type) {
-                                    case 'radio':
-                                        return (
-                                            <Fragment>
-                                                <FormLabel component="legend">{filter.label}</FormLabel>
-                                                <Divider />
-                                                <RadioButtonGroup data={filter.data} handleQuery={props.handleQuery} />
-                                            </Fragment>
-                                        )
-                                    case 'range':
-                                        return (
-                                            <Fragment>
+            <Grid container spacing={4}>
+                {
+                    filters.length > 0 ? filters.map((filter) => {
+                        switch (filter.type) {
+                            case 'radio':
+                                return (
+                                    <Grid item xs={6}>
                                             <FormLabel component="legend">{filter.label}</FormLabel>
                                             <Divider />
-                                            <RangeSlider data={filter.data} label={filter.label} handleQuery={props.handleQuery} />
-                                        </Fragment>
-                                        );
-                                    case 'datepicker':
-                                        return true;
-                                    case 'chip':
-                                        return true;
-                                    default:
-                                        return null;
-                                }
-                            }) : null
+                                            <RadioButtonGroup name = {filter.name} data={filter.data} handleFilter={handleFilter} />
+                                    </Grid>
+                                )
+                            case 'range':
+                                return (
+                                    <Grid item xs={6}>
+                                            <FormLabel component="legend">{filter.label}</FormLabel>
+                                            <Divider />
+                                            <RangeSlider name = {filter.name} data={filter.data} label={filter.label} handleFilter={handleFilter} />
+                                    </Grid>
+                                );
+                            case 'dateRange':
+                                return (
+                                    <Grid item xs={6}>
+                                            <FormLabel component="legend">{filter.label}</FormLabel>
+                                            <Divider />
+                                            <DateRange name = {filter.name} data={filter.data} handleQuery={props.handleQuery} />
+                                    </Grid>
+                                );
+                            case 'chip':
+                                return true;
+                            case 'switch':
+                                return (
+                                    <Switcher />
+                                );
+                            default:
+                                return null;
                         }
-                    </FormControl>
-                </Grid>
+                    }) : null
+                }
                 <Grid item xs={6}>
                     <FormControl className={classes.chipformControl}>
                         <InputLabel id="demo-mutiple-chip-label">Skapad av</InputLabel>

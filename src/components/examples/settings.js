@@ -17,10 +17,11 @@ const sort = [
     { name: 'Age (Desc)', key: 'age', order: 'desc', type: 'int' },
 ];
 const filters = [
-    { name: 'gender', key: 'gender', label: 'Kön', type: 'radio', data: {type: 'list', values:[{value:'male', label: 'Male'}, {value: 'female', label: 'Female'}, {value: 'other', label: 'Other'}]} },
-    { name: 'Age', label: 'Ålder', type: 'range', data: {values: [1, 4]}},
-    { name: 'Year', label: 'År', type: 'range', data: {values: [1900, 2030]}},
-  //  { name: 'Created', label: 'Skapad', type: 'dateRange', values: [1, 2] },
+    { name: 'gender', key: 'gender', label: 'Kön', type: 'radio', data: {values:[{value:'male', label: 'Male'}, {value: 'female', label: 'Female'}, {value: 'other', label: 'Other'}]} },
+    { name: 'Age', key: 'age', label: 'Ålder', type: 'range', data: {values: [1, 4]}},
+    { name: 'Year', key: 'year', label: 'År', type: 'range', data: {values: [1900, 2030]}},
+    { name: 'Born', key: 'born', label: 'Födelsedatum', type: 'dateRange', data: {values: {start:'1919-01-21', end: '2021-01-20'}}},
+   // {name: 'Active', key:'active', label: 'Aktiv', type: 'switch', data:{}}
   //  { name: 'Categories', label: 'Kategorier', type: 'select', values: [] }
 ];
 
