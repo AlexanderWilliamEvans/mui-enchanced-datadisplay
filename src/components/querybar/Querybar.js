@@ -180,6 +180,11 @@ const Querybar = (props) => {
     debugger;
     if (data[0].hasOwnProperty(param.name)) {
       switch (param.type) {
+        case 'radio':
+          result = data.filter((item) =>{
+            return item[param.name].toLowerCase() === param.filter.toLowerCase();
+          });
+          return result;
         case 'list':
           result = data.filter((item) =>{
             return param.filter.indexOf(item[param.name]) !== -1;

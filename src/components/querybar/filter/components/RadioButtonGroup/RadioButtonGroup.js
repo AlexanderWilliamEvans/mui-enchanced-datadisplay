@@ -23,7 +23,7 @@ const RadioButtonGroup = (props) => {
 
     const handleFilter = (e) => {
         setSelectedValue(e.target.value);
-        const query = {value: e.target.value, type, name}
+        const query = {filter: e.target.value, type: 'radio', name}
         props.handleFilter(query, 'filter');
     };
 
