@@ -12,10 +12,27 @@ const DateRange = (props) => {
 
     const classes = useStyles();
     const [data, setData] = useState(props.data || []);
+    const [label, setLabel ] = useState(props.label || '' );
+    const [type, setType ] = useState(props.type || 'range');
+    const [name, setName] = useState(props.name || '');
     const [values, setValues] = useState(props.data.values || null);
 
-    const handleTimeperiod = () => {
-
+    const handleTimeperiod = (e, period) => {
+        let query;
+        switch (period) {
+            case 'start':
+                setValues({ ...values, start: e.target.value });
+                query = { name, filter: { start: e.target.value, end:values.end }, type };
+                props.handleFilter(query, 'filter');
+                break;
+            case 'end':
+                setValues({ ...values, end: e.target.value });
+                query = { name, filter: { end: e.target.value, start: values.start }, type };
+                props.handleFilter(query, 'filter');
+                break;
+            default:
+                break;
+        }
     };
 
     useEffect(()=>{
@@ -28,7 +45,7 @@ const DateRange = (props) => {
             id="date"
             label="Från"
             type="date"
-            onChange={(e) => handleTimeperiod(e, 'start', props.data.name)}
+            onChange={(e) => handleTimeperiod(e, 'start')}
             defaultValue={values.start}
             className={classes.datefield}
             InputLabelProps={{
@@ -39,7 +56,7 @@ const DateRange = (props) => {
             id="date"
             label="Till"
             type="date"
-            onChange={(e) => handleTimeperiod(e, 'end', props.data.name)}
+            onChange={(e) => handleTimeperiod(e, 'end')}
             defaultValue={values.end}
             className={classes.datefield}
             InputLabelProps={{

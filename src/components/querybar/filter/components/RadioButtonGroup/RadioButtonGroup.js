@@ -16,14 +16,14 @@ const useStyles = makeStyles({
 const RadioButtonGroup = (props) => {
     const classes = useStyles();
     const [label, setLabel ] = useState(props.label || '' );
-    const [type, setType ] = useState(props.type || null);
+    const [type, setType ] = useState(props.type || 'radio');
     const [name, setName] = useState(props.name || '');
     const [values, setValues] = useState(props.data.values || []);
-    const [selectedValue, setSelectedValue] = useState(values[0].value || null);
+    const [selectedValue, setSelectedValue] = useState('all');
 
     const handleFilter = (e) => {
         setSelectedValue(e.target.value);
-        const query = {filter: e.target.value, type: 'radio', name}
+        const query = {filter: e.target.value, type, name}
         props.handleFilter(query, 'filter');
     };
 
@@ -35,7 +35,8 @@ const RadioButtonGroup = (props) => {
         <FormControl component="fieldset" className={classes.formControl}>
             <FormLabel component="legend">{label}</FormLabel>
             <Divider />
-            <RadioGroup aria-label="published" name="published" value={selectedValue} onChange={(e) => handleFilter(e)}>
+            <RadioGroup aria-label={name} name={name} value={selectedValue} onChange={(e) => handleFilter(e)}>
+            <FormControlLabel value="all" control={<Radio color="primary" />} label="All" />
                 {
                     values.map((value) => {
                         return (

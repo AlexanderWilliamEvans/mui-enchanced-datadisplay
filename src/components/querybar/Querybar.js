@@ -1,7 +1,7 @@
 import React, { Fragment, useEffect, useState, useRef } from 'react';
 import {
   IconButton, AppBar, Typography, InputBase, Toolbar, Tooltip, Collapse,
-  FormControl, FormControlLabel, FormLabel, Radio, NativeSelect, InputLabel, Divider
+  FormControl, NativeSelect, InputLabel, Divider
 } from '@material-ui/core';
 import { fade, makeStyles, withStyles } from '@material-ui/core/styles';
 import FilterListIcon from '@material-ui/icons/FilterList';
@@ -181,9 +181,14 @@ const Querybar = (props) => {
     if (data[0].hasOwnProperty(param.name)) {
       switch (param.type) {
         case 'radio':
-          result = data.filter((item) =>{
-            return item[param.name].toLowerCase() === param.filter.toLowerCase();
-          });
+          if(param.filter === 'all') {
+            result = data;
+          }
+          else {
+            result = data.filter((item) =>{
+              return item[param.name].toLowerCase() === param.filter.toLowerCase();
+            });
+          }
           return result;
         case 'list':
           result = data.filter((item) =>{
@@ -198,7 +203,7 @@ const Querybar = (props) => {
 
         case 'range':
           result = data.filter((item) => {
-           return item.date <= param.filter.end && item.date >= param.filter.start;
+           return item[param.name] <= param.filter.end && item[param.name] >= param.filter.start;
           });
           return result;
         default:
