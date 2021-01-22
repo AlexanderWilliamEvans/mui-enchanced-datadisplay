@@ -1,7 +1,7 @@
 const data = [
     { name: 'John Doe', gender: 'male', state: 'Delaware', age: '23', born: '2012-01-03', year: '2010' },
     { name: 'Zach Johnson', state: 'Arkansas', gender: 'male', age: '24', born: '2000-01-03',year: '2011' },
-    { name: 'Coby Durant', state: 'Arkansas', gender: 'other', age: '20', born: '1980-01-03', year: '2019' },
+    { name: 'Coby Durant', state: ['Arkansas', 'Maine'], gender: 'other', age: '20', born: '1980-01-03', year: '2019' },
     { name: 'James Dean', state: 'Nebraska', gender: 'male', age: '33',  born: '1980-01-03', year: '2022' },
     {name: 'Peter Jackson', state: 'Arkansas', gender: 'male', age: '58',  born: '1971-01-03', year: '2001'},
     {name: 'Larry Bird', state: 'Arkansas', gender: 'male', age: '65',  born: '1958-01-03', year: '1991'},
@@ -10,11 +10,21 @@ const data = [
     {name: 'Mike Pence', state: 'Arkansas', gender: 'male', age: '62',  born: '1958-10-13', year: '2016'}
 ];
 
+
 const sort = [
     { name: 'Name (Asc)', key: 'name', order: 'asc', type: 'string' },
     { name: 'Name (Desc)', key: 'name', order: 'desc', type: 'string' },
     { name: 'Age (Asc)', key: 'age', order: 'asc', type: 'int' },
     { name: 'Age (Desc)', key: 'age', order: 'desc', type: 'int' },
+];
+
+const headers = [
+    { field: "name", headerName: "Namn" },
+    { field: "age", headerName: "Ålder" },
+    { field: "gender", headerName: "Kön" },
+    { field: "state", headerName: "Stat" },
+    { field: "born", headerName: "Födelsedatum" },
+    { field: "year", headerName: "År" }
 ];
 const filters = [
     { name: 'gender', key: 'gender', label: 'Kön', type: 'radio', data: {values:[{value:'male', label: 'Male'}, {value: 'female', label: 'Female'}, {value: 'other', label: 'Other'}]} },
@@ -45,5 +55,6 @@ const filters = [
 export default({
     data,
     sort,
-    filters
+    filters,
+    headers,
 });

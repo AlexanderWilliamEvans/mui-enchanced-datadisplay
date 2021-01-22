@@ -78,12 +78,17 @@ const ChipList = (props) => {
     const handleFilter = (e) => {
 
         setSelectedValues(e.target.value);
-        const query = {filter: e.target.value, type, name}
+        const query = {filter: e.target.value.length > 0 ? e.target.value : values, type:'list', name}
         props.handleFilter(query, 'filter');
     };
 
-    const removeChip = (e) => {
-
+    const removeChip = (e, removed) => {
+        let newState = selectedValues.filter((selected) => {
+            return selected !== removed;
+        });
+        setSelectedValues(newState);
+        const query = {filter: newState.length > 0 ? newState : values, type:'list', name};
+        props.handleFilter(query, 'filter');
     };
   
     useEffect(() => {

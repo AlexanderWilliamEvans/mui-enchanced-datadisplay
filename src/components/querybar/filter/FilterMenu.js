@@ -5,7 +5,10 @@ import {
     Grid,
     FormLabel,
     Divider,
+    Tooltip,
+    IconButton,
 } from '@material-ui/core';
+import ClearAllIcon from '@material-ui/icons/ClearAll';
 import RadioButtonGroup from './components/RadioButtonGroup/RadioButtonGroup';
 import RangeSlider from './components/RangeSlider/RangeSlider';
 import DateRange from './components/DateRange/DateRange';
@@ -19,13 +22,13 @@ const useStyles = makeStyles((theme) => ({
     gridItem: {
         padding: theme.spacing(4),
     },
+    clearFilterButton: {
+        float: 'right',
+        padding: theme.spacing(1),
+        margin: theme.spacing(1)
+    },
     menuButton: {
         marginRight: theme.spacing(2),
-    },
-    buttonGroup: {
-        padding: theme.spacing(1),
-        borderBottom: '1px solid #ccc',
-        height: '75px'
     },
     filterContainer: {
         padding: theme.spacing(2),
@@ -44,25 +47,6 @@ const useStyles = makeStyles((theme) => ({
         minWidth: 120,
         maxWidth: 300,
     },
-    chips: {
-        display: 'flex',
-        flexWrap: 'wrap',
-    },
-    chipContainer: {
-        border: '1px solid #ccc',
-        padding: theme.spacing(1),
-        minWidth: 500,
-        maxWidth: 500,
-        display: 'flex',
-        justifyContent: 'center',
-        flexWrap: 'wrap',
-        '& > *': {
-            margin: theme.spacing(0.5),
-        },
-    },
-    chip: {
-        margin: 2,
-    },
     noLabel: {
         marginTop: theme.spacing(3),
     },
@@ -75,11 +59,7 @@ const FilterMenu = (props) => {
 
     const classes = useStyles();
     const [filters, setFilters] = useState(props.filters || []);
-    const [activeFilters, setActiveFilters] = useState([
-        /*  {name: 'gender', type: 'radio', filter: ['male', 'female']},
-          {name:'year', type: 'range', filter: [1920, 1970]},
-          {name: 'born', type: 'dateRange', filter: ['2010-07-10', '2012-04-12']}*/
-    ]);
+    const [activeFilters, setActiveFilters] = useState([]);
     const activeFilterRef = useRef(activeFilters);
 
     const handleFilter = (filter) => {
@@ -91,6 +71,10 @@ const FilterMenu = (props) => {
             newState.push(filter);
         }
         setActiveFilters(newState);
+    };
+
+    const clearFilter = () => {
+        setActiveFilters([]);
     };
 
 
@@ -109,6 +93,17 @@ const FilterMenu = (props) => {
     return (
         <div className={classes.filterContainer}>
             <Grid container spacing={4}>
+                <Grid item xs={12}>
+                    <Tooltip title="Rensa filter">
+                        <IconButton
+                            className={classes.clearFilterButton}
+                            color="primary"
+                            onClick={() => clearFilter()}
+                        >
+                            <ClearAllIcon fontSize="large" />
+                        </IconButton>
+                    </Tooltip>
+                </Grid>
                 {
                     filters.length > 0 ? filters.map((filter) => {
                         switch (filter.type) {
@@ -141,7 +136,7 @@ const FilterMenu = (props) => {
                                     <Grid item xs={4} className={classes.gridItem}>
                                         <FormLabel component="legend">{filter.label}</FormLabel>
                                         <Divider />
-                                        <ChipList name={filter.name} type={filter.type} data={filter.data} handleFilter={handleFilter}/>
+                                        <ChipList name={filter.name} type={filter.type} data={filter.data} handleFilter={handleFilter} />
                                     </Grid>
                                 );
                             case 'switch':

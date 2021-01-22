@@ -22,6 +22,10 @@ const BasicExample = () => {
     const classes = useStyles();
 
     const [rows, setRows] = useState(settings.data);
+    const [data, setData] = useState(settings.data);
+    const updateData = () => {
+        return settings.data;
+    };
 
     useEffect(() => {
         console.log(rows);
@@ -32,8 +36,10 @@ const BasicExample = () => {
             <Typography>A Simple Example</Typography>
             <br />
             <Querybar
+                headers={settings.headers}
                 sort={settings.sort}
                 data={settings.data}
+                updateData={updateData}
                 filters={settings.filters}
                 setData={setRows}
                 placeholder={placeholder}

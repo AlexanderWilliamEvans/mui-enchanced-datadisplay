@@ -7,6 +7,7 @@ import { fade, makeStyles, withStyles } from '@material-ui/core/styles';
 import FilterListIcon from '@material-ui/icons/FilterList';
 import SearchIcon from '@material-ui/icons/Search';
 import FilterMenu from './filter/FilterMenu';
+import ButtonPanel from './Buttonpanel/ButtonPanel';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -118,21 +119,21 @@ const Querybar = (props) => {
       }
 
       if (type === 'filter' || filter.length > 0) {
-        if(type === 'filter') {
-          for (let i = 0; i < query.length; i++) {     
+        if (type === 'filter') {
+          for (let i = 0; i < query.length; i++) {
             test = handleFilter(query[i], test);
-        }
-        setFilter(query);
+          }
+          setFilter(query);
         }
         else {
-          for (let i = 0; i < filter.length; i++) {     
+          for (let i = 0; i < filter.length; i++) {
             test = handleFilter(filter[i], test);
-        }
+          }
         }
       }
 
       if (type === 'search' || search.length > 0) {
-        test = handleSearch(type === 'search' ?  query : search, test);
+        test = handleSearch(type === 'search' ? query : search, test);
       }
       setDataQuery(test);
       setDisplayedData(test);
@@ -181,18 +182,24 @@ const Querybar = (props) => {
     if (data[0].hasOwnProperty(param.name)) {
       switch (param.type) {
         case 'radio':
-          if(param.filter === 'all') {
+          if (param.filter === 'all') {
             result = data;
           }
           else {
-            result = data.filter((item) =>{
+            result = data.filter((item) => {
               return item[param.name].toLowerCase() === param.filter.toLowerCase();
             });
           }
           return result;
         case 'list':
-          result = data.filter((item) =>{
-            return param.filter.indexOf(item[param.name]) !== -1;
+          debugger;
+          result = data.filter((d) => {
+            if(Array.isArray(d[param.name])) {
+              return d[param.name].some(item => param.filter.includes(item));
+            }
+            else {
+              return param.filter.includes(d[param.name]);
+            }
           });
           return result;
         case 'bool':
@@ -203,7 +210,7 @@ const Querybar = (props) => {
 
         case 'range':
           result = data.filter((item) => {
-           return item[param.name] <= param.filter.end && item[param.name] >= param.filter.start;
+            return item[param.name] <= param.filter.end && item[param.name] >= param.filter.start;
           });
           return result;
         default:
@@ -300,6 +307,7 @@ const Querybar = (props) => {
           <FilterMenu handleQuery={handleQuery} authors={props.authors} date={props.date} filters={props.filters} />
         </Collapse>
       </div>
+      <ButtonPanel headers ={props.headers} data ={displayedData} updateData={props.updateData}/>
       <br />
       {
         data.length && props.showSearchResultText > 0 ?
