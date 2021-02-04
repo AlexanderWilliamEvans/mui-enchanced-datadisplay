@@ -95,7 +95,6 @@ const ChipList = (props) => {
 
   }, [values]);
 
-  debugger;
     return (
         <FormControl className={classes.chipformControl}>
                         <InputLabel id="demo-mutiple-chip-label">{label}</InputLabel>
@@ -104,11 +103,10 @@ const ChipList = (props) => {
                                 event.stopPropagation();
                             }}
                             labelId="demo-mutiple-chip-label"
-                            id="demo-mutiple-chip"
                             multiple
                             value={selectedValues}
                             onChange={(e) => handleFilter(e)}
-                            input={<Input id="select-multiple-chip" />}
+                            input={<Input id={`select-multiple-chip-${Math.random(0, 1000000)}`} />}
                             renderValue={(selected) => (
                                 <div className={classes.chips}>
                                     {selected.map((value) => 

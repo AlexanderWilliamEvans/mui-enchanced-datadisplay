@@ -6,8 +6,8 @@ import {
 import { fade, makeStyles, withStyles } from '@material-ui/core/styles';
 import FilterListIcon from '@material-ui/icons/FilterList';
 import SearchIcon from '@material-ui/icons/Search';
-import FilterMenu from './filter/FilterMenu';
-import ButtonPanel from './Buttonpanel/ButtonPanel';
+import FilterMenu from './Filter/FilterMenu';
+import ButtonPanel from './ButtonPanel/ButtonPanel';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -100,11 +100,12 @@ const Querybar = (props) => {
 
   const classes = useStyles();
   const data = props.data || [];
+  const headers = props.headers || null;
   const [displayedData, setDisplayedData] = useState(props.data || []);
-  const displayedDataRef = useRef();
+  const displayedDataRef = useRef([]);
   const [dataQuery, setDataQuery] = useState([]);
   const [filter, setFilter] = useState([]);
-  const [sort, setSort] = useState(props.sort[0].name || 'sortera');
+  const [sort, setSort] = useState('sortera');
   const [sortOptions, setSortOptions] = useState(props.sort || []);
   const [search, setSearch] = useState('');
   const [collapseFilter, setCollapseFilter] = useState(false);
@@ -112,7 +113,6 @@ const Querybar = (props) => {
   const handleQuery = (e, type) => {
     const query = e.target !== undefined ? e.target.value : e;
     let test = JSON.parse(JSON.stringify(data));
-    debugger;
     if (data.length > 0) {
       if (type === 'sort' || sort.length > 0) {
         test = handleSort(type === 'sort' ? JSON.parse(query) : sort, test);
@@ -151,7 +151,6 @@ const Querybar = (props) => {
           });
           result = param.order.toLowerCase() === 'asc' ? result : result.reverse();
           setSort(param);
-          console.log(JSON.stringify(result));
           return result;
         case 'int':
           result = data.sort((a, b) => {
@@ -159,7 +158,6 @@ const Querybar = (props) => {
           });
           result = param.order.toLowerCase() === 'asc' ? result : result.reverse();
           setSort(param);
-          console.log(JSON.stringify(result));
           return result;
         case 'date':
           result = data.sort((a, b) => {
@@ -178,48 +176,73 @@ const Querybar = (props) => {
 
   const handleFilter = (param, data) => {
     let result;
-    debugger;
-    if (data[0].hasOwnProperty(param.name)) {
-      switch (param.type) {
-        case 'radio':
-          if (param.filter === 'all') {
-            result = data;
-          }
-          else {
-            result = data.filter((item) => {
-              return item[param.name].toLowerCase() === param.filter.toLowerCase();
+    // if (data[0].hasOwnProperty(param.name)) {
+    switch (param.type) {
+      case 'radio':
+        if (param.filter === 'all') {
+          result = data;
+        }
+        else {
+          result = data.filter((item) => {
+            // If item[param.name] is undefined or null it will throws an error!
+            if (item[param.name] !== undefined && item[param.name] !== null) {
+              return item[param.name].toString().toLowerCase() === param.filter.toString().toLowerCase();
+            } else {
+              return false;
+            }
+          });
+        }
+        return result;
+      case 'list':
+        switch (param.name) {
+          case 'form_categories':
+            result = param.filter.length < 1 ? data : data.filter((d, i) => {
+              for (let i = 0; i < d.form_categories.length; i++) {
+                return param.filter.indexOf(d.form_categories[i].name) !== -1;
+              }
             });
-          }
-          return result;
-        case 'list':
-          debugger;
-          result = data.filter((d) => {
-            if(Array.isArray(d[param.name])) {
-              return d[param.name].some(item => param.filter.includes(item));
-            }
-            else {
-              return param.filter.includes(d[param.name]);
-            }
-          });
-          return result;
-        case 'bool':
+            break;
+          case 'projects':
+            result = param.filter.length < 1 ? data : data.filter(d => {
+              if (d.project !== undefined) {
+                return param.filter.indexOf(d.project.title) !== -1;
+              } else {
+                return false;
+              }
+            });
+            break;
+          default:
+            result = data.filter((d) => {
+              if (Array.isArray(d[param.name])) {
+                return d[param.name].some(item => param.filter.includes(item));
+              }
+              else {
+                return param.filter.includes(d[param.name]);
+              }
+            });
+            break;
+        }
+        return result;
+      case 'switch':
+        if (param.filter.checked) {
           result = data.filter((item) => {
-            return item.published
+            return item[param.name] === param.filter.value;
           });
           return result;
-
-        case 'range':
-          result = data.filter((item) => {
-            return item[param.name] <= param.filter.end && item[param.name] >= param.filter.start;
-          });
-          return result;
-        default:
+        }
+        else {
           return data;
-      }
+        }
+      case 'range':
+        result = data.filter((item) => {
+          return item[param.name] <= param.filter.end && item[param.name] >= param.filter.start;
+        });
+        return result;
+      default:
+        return data;
     }
-    return data;
-
-
+    // }
+    //  return data;
   };
 
   const handleSearch = (param, data) => {
@@ -239,15 +262,72 @@ const Querybar = (props) => {
     return data;
   };
 
+  const exportData = () => {
+    const firstRow = headers.map(header => header.headerName);
+    const rows = [];
+    rows.push(firstRow);
+    for (const [key, value] of Object.entries(displayedData)) {
+      let res = [];
+      headers.map(header => {
+        if (value.hasOwnProperty(header.field)) {
+          res.push(value[header.field] !== null ? value[header.field].toString().replace(/(\r\n|\n|\r)/gm, "") : " ");
+        }
+      });
+      rows.push(res);
+    }
+
+    const fName = `${props.filename || 'data'}.csv`;
+    let csv = '';
+    for (let i = 0; i < rows.length; i++) {
+      let row = rows[i];
+      for (let j = 0; j < row.length; j++) {
+        let val = row[j] === null ? '' : row[j].toString();
+        val = val.replace(/\t/gi, " ");
+        if (j > 0)
+          csv += ';';
+        csv += val;
+      }
+      csv += '\n';
+    }
+    // for UTF-16
+    let cCode, bArr = [];
+    bArr.push(255, 254);
+    for (let i = 0; i < csv.length; ++i) {
+      cCode = csv.charCodeAt(i);
+      bArr.push(cCode & 0xff);
+      bArr.push(cCode / 256 >>> 0);
+    }
+    const blob = new Blob([new Uint8Array(bArr)], { type: 'text/csv;charset=UTF-16LE;' });
+    if (navigator.msSaveBlob) {
+      navigator.msSaveBlob(blob, fName);
+    } else {
+      let link = document.createElement("a");
+      if (link.download !== undefined) {
+        const url = window.URL.createObjectURL(blob);
+        link.setAttribute("href", url);
+        link.setAttribute("download", fName);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        // Timeout is needed for large datasets.
+        setTimeout(function () {
+          window.URL.revokeObjectURL(url);
+        }, 0);
+      }
+    }
+  };
+
 
 
 
   useEffect(() => {
     if (JSON.stringify(displayedData) !== JSON.stringify(displayedDataRef.current)) {
-      displayedData.current = displayedData;
+      displayedDataRef.current = displayedData;
+      setDisplayedData(displayedData);
       props.setData(displayedData);
     }
-  }, [props, displayedData, sortOptions, sort]);
+  }, [sortOptions, sort, displayedData, props]);
 
   return (
     <Fragment>
@@ -276,9 +356,9 @@ const Querybar = (props) => {
                     input={<BootstrapInput />}
                   >
                     {
-                      sortOptions.map(sortOption => {
+                      sortOptions.map((sortOption, i) => {
                         return (
-                          <option value={JSON.stringify(sortOption)}>{sortOption.name}</option>
+                          <option key={`${sortOption.name}-${i}`} value={JSON.stringify(sortOption)}>{sortOption.name}</option>
                         );
                       })
                     }
@@ -307,7 +387,14 @@ const Querybar = (props) => {
           <FilterMenu handleQuery={handleQuery} authors={props.authors} date={props.date} filters={props.filters} />
         </Collapse>
       </div>
-      <ButtonPanel headers ={props.headers} data ={displayedData} updateData={props.updateData}/>
+      <br />
+      <ButtonPanel
+        exportData={exportData}
+        headers={headers}
+        updateData={props.updateData}
+        showDelete={props.showDelete}
+        handleDelete={props.handleDelete}
+      />
       <br />
       {
         data.length && props.showSearchResultText > 0 ?
@@ -317,7 +404,6 @@ const Querybar = (props) => {
           (null)
       }
       <br />
-      <Divider />
     </Fragment>
   );
 

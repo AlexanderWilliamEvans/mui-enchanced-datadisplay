@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { makeStyles, Container, Typography } from '@material-ui/core';
 import BasicTable from '../tables/BasicTable';
-import Querybar from '../querybar/Querybar';
+import Querybar from '../Querybar/Querybar';
 import settings from './settings';
 
 

@@ -12,7 +12,7 @@ import ClearAllIcon from '@material-ui/icons/ClearAll';
 import RadioButtonGroup from './components/RadioButtonGroup/RadioButtonGroup';
 import RangeSlider from './components/RangeSlider/RangeSlider';
 import DateRange from './components/DateRange/DateRange';
-import Switcher from './components/Switcher/Switcher';
+import Switch from './components/Switch/Switch';
 import ChipList from './components/ChipList/ChipList';
 
 const useStyles = makeStyles((theme) => ({
@@ -22,10 +22,13 @@ const useStyles = makeStyles((theme) => ({
     gridItem: {
         padding: theme.spacing(4),
     },
+    headerGrid: {
+        padding: 0,
+    },
     clearFilterButton: {
         float: 'right',
-        padding: theme.spacing(1),
-        margin: theme.spacing(1)
+        padding: 0,
+        margin: 0
     },
     menuButton: {
         marginRight: theme.spacing(2),
@@ -53,10 +56,7 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
-
-
 const FilterMenu = (props) => {
-
     const classes = useStyles();
     const [filters, setFilters] = useState(props.filters || []);
     const [activeFilters, setActiveFilters] = useState([]);
@@ -93,7 +93,7 @@ const FilterMenu = (props) => {
     return (
         <div className={classes.filterContainer}>
             <Grid container spacing={4}>
-                <Grid item xs={12}>
+                <Grid item xs={12} className={classes.headerGrid}>
                     <Tooltip title="Rensa filter">
                         <IconButton
                             className={classes.clearFilterButton}
@@ -105,11 +105,12 @@ const FilterMenu = (props) => {
                     </Tooltip>
                 </Grid>
                 {
-                    filters.length > 0 ? filters.map((filter) => {
+                    filters.length > 0 ? filters.map((filter, index) => {
+
                         switch (filter.type) {
                             case 'radio':
                                 return (
-                                    <Grid item xs={4} className={classes.gridItem}>
+                                    <Grid key={`${filter.name}-${index}`} item xs={filter.width || 4} className={classes.gridItem}>
                                         <FormLabel component="legend">{filter.label}</FormLabel>
                                         <Divider />
                                         <RadioButtonGroup name={filter.name} data={filter.data} handleFilter={handleFilter} />
@@ -117,7 +118,7 @@ const FilterMenu = (props) => {
                                 )
                             case 'range':
                                 return (
-                                    <Grid item xs={4} className={classes.gridItem}>
+                                    <Grid key={`${filter.name}-${index}`} item xs={filter.width || 4} className={classes.gridItem}>
                                         <FormLabel component="legend">{filter.label}</FormLabel>
                                         <Divider />
                                         <RangeSlider name={filter.name} type={filter.type} data={filter.data} handleFilter={handleFilter} />
@@ -125,7 +126,7 @@ const FilterMenu = (props) => {
                                 );
                             case 'dateRange':
                                 return (
-                                    <Grid item xs={4} className={classes.gridItem}>
+                                    <Grid key={`${filter.name}-${index}`} item xs={filter.width || 4} className={classes.gridItem}>
                                         <FormLabel component="legend">{filter.label}</FormLabel>
                                         <Divider />
                                         <DateRange name={filter.name} data={filter.data} handleFilter={handleFilter} />
@@ -133,7 +134,7 @@ const FilterMenu = (props) => {
                                 );
                             case 'chip':
                                 return (
-                                    <Grid item xs={4} className={classes.gridItem}>
+                                    <Grid key={`${filter.name}-${index}`} item xs={filter.width || 4} className={classes.gridItem}>
                                         <FormLabel component="legend">{filter.label}</FormLabel>
                                         <Divider />
                                         <ChipList name={filter.name} type={filter.type} data={filter.data} handleFilter={handleFilter} />
@@ -141,7 +142,11 @@ const FilterMenu = (props) => {
                                 );
                             case 'switch':
                                 return (
-                                    <Switcher />
+                                    <Grid key={`${filter.name}-${index}`} item xs={filter.width || 4} className={classes.gridItem}>
+                                        <FormLabel component="legend">{filter.label}</FormLabel>
+                                        <Divider />
+                                        <Switch name={filter.name} value={filter.data.value} handleFilter={handleFilter} />
+                                    </Grid>
                                 );
                             default:
                                 return null;

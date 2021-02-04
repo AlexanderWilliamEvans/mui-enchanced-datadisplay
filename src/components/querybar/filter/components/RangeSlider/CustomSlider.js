@@ -13,7 +13,7 @@ const MenuProps = {
     },
 };
 
-const IOSSlider = withStyles({
+const CustomSlider = withStyles({
     root: {
         color: 'primary',
         height: 2,
@@ -62,4 +62,4 @@ const IOSSlider = withStyles({
     },
 })(Slider);
 
-export default IOSSlider;
+export default CustomSlider;

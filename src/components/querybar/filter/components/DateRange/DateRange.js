@@ -42,7 +42,6 @@ const DateRange = (props) => {
         <form className={classes.datecontainer} noValidate>
         <Typography variant="body2">{props.title}</Typography>
         <TextField
-            id="date"
             label="Från"
             type="date"
             onChange={(e) => handleTimeperiod(e, 'start')}
@@ -53,7 +52,6 @@ const DateRange = (props) => {
             }}
         />
         <TextField
-            id="date"
             label="Till"
             type="date"
             onChange={(e) => handleTimeperiod(e, 'end')}

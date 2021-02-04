@@ -1,6 +1,6 @@
 import React, { Fragment, useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core';
-import IOSSlider from './Types/IOS';
+import CustomSlider from './CustomSlider';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -44,7 +44,7 @@ const RangeSlider = (props) => {
 
     return (
         <Fragment>
-            <IOSSlider
+            <CustomSlider
                 className={classes.rangeSlider}
                 valueLabelDisplay="on"
                 value={values}

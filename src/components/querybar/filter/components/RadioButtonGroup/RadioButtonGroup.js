@@ -34,13 +34,12 @@ const RadioButtonGroup = (props) => {
     return (
         <FormControl component="fieldset" className={classes.formControl}>
             <FormLabel component="legend">{label}</FormLabel>
-            <Divider />
             <RadioGroup aria-label={name} name={name} value={selectedValue} onChange={(e) => handleFilter(e)}>
-            <FormControlLabel value="all" control={<Radio color="primary" />} label="All" />
+            <FormControlLabel value="all" control={<Radio color="primary" />} label="Alla" />
                 {
                     values.map((value) => {
                         return (
-                            <FormControlLabel value={value.value} control={<Radio color="primary" />} label={value.label} />
+                            <FormControlLabel key={`${value.label}-${Math.random(0, 1000)}`} value={value.value} control={<Radio color="primary" />} label={value.label} />
                         )
                     })
                 }

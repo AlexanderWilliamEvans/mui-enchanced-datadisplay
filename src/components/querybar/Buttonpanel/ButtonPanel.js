@@ -15,20 +15,17 @@ const useStyles = makeStyles((theme) => ({
 const ButtonPanel = (props) => {
     const classes = useStyles();
     const showDelete = props.showDelete || true;
-
     useEffect(() => {
 
-    }, [props]);
+    }, [JSON.stringify(props)]);
 
     return (
         <div className={classes.buttonGroup}>
+            <UpdateButton updateData={props.updateData} />
             {
-                showDelete ? (
-                    <DeleteButton updateData={props.updateData} />
-                ) : (null)
+                props.headers !== null && props.headers !== undefined ?
+                <ExportButton exportData={props.exportData}  /> : null
             }
-            <UpdateButton updateData={props.updateData}/>
-            <ExportButton headers = {props.headers} data={props.data} />
         </div>
     );
 };
