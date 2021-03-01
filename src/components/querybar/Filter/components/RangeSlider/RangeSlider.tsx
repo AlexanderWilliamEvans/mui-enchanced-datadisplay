@@ -1,31 +1,38 @@
-import React, { Fragment, useState, useEffect } from 'react';
-import { makeStyles } from '@material-ui/core';
-import CustomSlider from './CustomSlider';
+import React, { Fragment, useState, useEffect, ChangeEvent } from "react";
+import { makeStyles, Theme, createStyles } from "@material-ui/core";
+import CustomSlider from "./CustomSlider";
+import { RangeSliderTypes } from "../../../types/RangeSlider.types";
 
-
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme:Theme) => createStyles({
     rangeSlider: {
         marginTop: '2.5em'
     },
 }));
-const RangeSlider = (props) => {
+
+interface IMark {
+    value: number,
+    label: string
+};
+
+const RangeSlider = (props:RangeSliderTypes) => {
     const classes = useStyles();
     const [data, setData] = useState(props.data || []);
-    const [range, setRange] = useState(props.data.values || null);
+    const range = props.data.values || null;
+    const type = props.type || 'range';
+    const name = props.name || '';
     const [values, setValues] = useState(props.data.values || null);
-    const [label, setLabel] = useState(props.label || '');
-    const [type, setType] = useState(props.type || 'range');
-    const [name, setName] = useState(props.name || '');
-    const [ratingMarks, setRatingMarks] = useState(null);
+    const [ratingMarks, setRatingMarks] = useState<IMark[]>([]);
 
-    const ratingsRangeText = (value) => {
+    const ratingsRangeText = (value:any) => {
         return `${value}`;
     };
 
-    const handleFilter = (e, vals) => {
-        setValues(vals);
-        const query = { filter: { start: vals[0], end: vals[1] }, type, name }
-        props.handleFilter(query, 'filter');
+    const handleFilter = (vals: number | Array<number>) => {
+        if(Array.isArray(vals)) {
+            setValues(vals);
+            const query = { filter: { start: vals[0], end: vals[1] }, type, name }
+            props.handleFilter(query, 'filter');
+        }
     };
 
     useEffect(() => {
@@ -51,7 +58,7 @@ const RangeSlider = (props) => {
                 marks={ratingMarks}
                 min={range[0]}
                 max={range[1]}
-                onChange={(e, values) => handleFilter(e, values)}
+                onChange={(e, values) => handleFilter(values)}
                 aria-labelledby="range-slider"
                 getAriaValueText={(e) => ratingsRangeText(e)}
             />

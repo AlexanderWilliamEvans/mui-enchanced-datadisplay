@@ -10,14 +10,17 @@ const data = [
     {name: 'Mike Pence', state: 'Arkansas', gender: 'male', age: '62',  born: '1958-10-13', year: '2016'}
 ];
 
+const showSearchResultText = true;
 
-const sort = [
-    { name: 'Name (Asc)', key: 'name', order: 'asc', type: 'string' },
-    { name: 'Name (Desc)', key: 'name', order: 'desc', type: 'string' },
-    { name: 'Age (Asc)', key: 'age', order: 'asc', type: 'int' },
-    { name: 'Age (Desc)', key: 'age', order: 'desc', type: 'int' },
-];
+const useSort = true;
 
+const sort = ([
+        { name: 'Name (ASC)', key: 'name', order: 'asc', type: 'string' },
+        { name: 'Name (Desc)', key: 'name', order: 'desc', type: 'string' },
+        { name: 'Age (Asc)', key: 'age', order: 'asc', type: 'string' },
+        { name: 'Age (Desc)', key: 'age', order: 'desc', type: 'string' },
+      ]);
+      
 const headers = [
     { field: "name", headerName: "Namn" },
     { field: "age", headerName: "Ålder" },
@@ -54,6 +57,8 @@ const filters = [
 
 export default({
     data,
+    useSort,
+    showSearchResultText,
     sort,
     filters,
     headers,

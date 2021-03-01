@@ -1,19 +1,19 @@
-import React, { useState, useRef, useEffect, useCallback, Fragment } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
     makeStyles,
-    useTheme,
     Grid,
     FormLabel,
     Divider,
     Tooltip,
     IconButton,
 } from '@material-ui/core';
-import ClearAllIcon from '@material-ui/icons/ClearAll';
+import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import RadioButtonGroup from './components/RadioButtonGroup/RadioButtonGroup';
 import RangeSlider from './components/RangeSlider/RangeSlider';
 import DateRange from './components/DateRange/DateRange';
 import Switch from './components/Switch/Switch';
 import ChipList from './components/ChipList/ChipList';
+import { FilterMenuTypes } from '../types/FilterMenu.types';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -56,13 +56,19 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
-const FilterMenu = (props) => {
+interface IActiveFilter {
+    name: string,
+    type: string,
+    filter: any,
+};
+
+const FilterMenu = (props:FilterMenuTypes) => {
     const classes = useStyles();
-    const [filters, setFilters] = useState(props.filters || []);
-    const [activeFilters, setActiveFilters] = useState([]);
+    const filters = props.filters || [];
+    const [activeFilters, setActiveFilters] = useState<IActiveFilter[]>([]);
     const activeFilterRef = useRef(activeFilters);
 
-    const handleFilter = (filter) => {
+    const handleFilter = (filter:Array<IActiveFilter> | any) => {
         let newState = [...activeFilters];
         const index = newState.findIndex(x => x.name === filter.name);
         if (index !== -1) {
@@ -79,13 +85,13 @@ const FilterMenu = (props) => {
 
 
     const handleQuery = useCallback(() => {
-        props.handleQuery(activeFilters, 'filter');
+        props.handleQuery(activeFilters, "filter");
     }, [props, activeFilters]);
 
     useEffect(() => {
 
         if (JSON.stringify(activeFilterRef.current) !== JSON.stringify(activeFilters)) {
-            handleQuery(activeFilters, 'filter');
+            handleQuery();
             activeFilterRef.current = activeFilters;
         }
     }, [filters, activeFilters, handleQuery]);
@@ -100,13 +106,12 @@ const FilterMenu = (props) => {
                             color="primary"
                             onClick={() => clearFilter()}
                         >
-                            <ClearAllIcon fontSize="large" />
+                            <HighlightOffIcon fontSize="large" />
                         </IconButton>
                     </Tooltip>
                 </Grid>
                 {
                     filters.length > 0 ? filters.map((filter, index) => {
-
                         switch (filter.type) {
                             case 'radio':
                                 return (

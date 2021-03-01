@@ -1,13 +1,15 @@
 import React, { Fragment, useEffect, useState, useRef } from 'react';
 import {
   IconButton, AppBar, Typography, InputBase, Toolbar, Tooltip, Collapse,
-  FormControl, NativeSelect, InputLabel, Divider
+  FormControl, NativeSelect, InputLabel,
 } from '@material-ui/core';
-import { fade, makeStyles, withStyles } from '@material-ui/core/styles';
+import { createStyles, fade, makeStyles, Theme, withStyles } from '@material-ui/core/styles';
 import FilterListIcon from '@material-ui/icons/FilterList';
 import SearchIcon from '@material-ui/icons/Search';
 import FilterMenu from './Filter/FilterMenu';
 import ButtonPanel from './ButtonPanel/ButtonPanel';
+import { QuerybarTypes } from './types/Querybar.types';
+import { IQueryObject } from './interfaces/IQueryObject';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -63,7 +65,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const BootstrapInput = withStyles((theme) => ({
+const BootstrapInput = withStyles((theme:Theme) => createStyles({
 
   input: {
     minWidth: '100px',
@@ -96,21 +98,47 @@ const BootstrapInput = withStyles((theme) => ({
   },
 }))(InputBase);
 
-const Querybar = (props) => {
+/**
+     * Summary: A querybar for search, filter and CRUD-operations in a given data.
+     *
+     * Description. (use period)
+     *
+     * @since      x.x.x
+     * @access     private
+     *
+     * @constructs namespace.Class
+     * @augments   Parent
+     * @mixes      mixin
+     *
+     * @alias    realName
+     * @memberof namespace
+     *
+     * @see   Function/class relied on
+     * @link  URL
+     * @fires Class#eventName
+     *
+     * @param {Object} attributes     The model's attributes.
+     * @param {type}   attributes.key One of the model's attributes.
+     * @param {Object} [options]      The model's options.
+     * @param {type}   attributes.key One of the model's options.
+     */
+
+const Querybar = (props:QuerybarTypes) => {
 
   const classes = useStyles();
   const data = props.data || [];
   const headers = props.headers || null;
+  const showSearchResultText = props.showSearchResultText || false;
   const [displayedData, setDisplayedData] = useState(props.data || []);
-  const displayedDataRef = useRef([]);
+  const displayedDataRef = useRef<any[]>([]);
   const [dataQuery, setDataQuery] = useState([]);
   const [filter, setFilter] = useState([]);
   const [sort, setSort] = useState('sortera');
-  const [sortOptions, setSortOptions] = useState(props.sort || []);
+  const sortOptions = props.sort || [];
   const [search, setSearch] = useState('');
   const [collapseFilter, setCollapseFilter] = useState(false);
 
-  const handleQuery = (e, type) => {
+  const handleQuery = (e:any, type:string) => {
     const query = e.target !== undefined ? e.target.value : e;
     let test = JSON.parse(JSON.stringify(data));
     if (data.length > 0) {
@@ -141,26 +169,26 @@ const Querybar = (props) => {
 
   };
 
-  const handleSort = (param, data) => {
+  const handleSort = (param:any, data:Array<any>) => {
     let result;
     if (data[0].hasOwnProperty(param.key)) {
       switch (param.type.toLowerCase()) {
         case 'string':
-          result = data.sort((a, b) => {
+          result = data.sort((a:any, b:any) => {
             return a[param.key].localeCompare(b[param.key], 'sv', { ignorePunctuation: true })
           });
           result = param.order.toLowerCase() === 'asc' ? result : result.reverse();
           setSort(param);
           return result;
         case 'int':
-          result = data.sort((a, b) => {
+          result = data.sort((a:any, b:any) => {
             return a[param.key] - b[param.key];
           });
           result = param.order.toLowerCase() === 'asc' ? result : result.reverse();
           setSort(param);
           return result;
         case 'date':
-          result = data.sort((a, b) => {
+          result = data.sort((a:any, b:any) => {
             return new Date(a[param.key]).getTime() - new Date(b[param.key]).getTime();
           });
           result = param.order.toLowerCase() === 'asc' ? result : result.reverse();
@@ -174,7 +202,7 @@ const Querybar = (props) => {
 
   };
 
-  const handleFilter = (param, data) => {
+  const handleFilter = (param:any, data:IQueryObject) => {
     let result;
     // if (data[0].hasOwnProperty(param.name)) {
     switch (param.type) {
@@ -183,7 +211,7 @@ const Querybar = (props) => {
           result = data;
         }
         else {
-          result = data.filter((item) => {
+          result = data.filter((item:any) => {
             // If item[param.name] is undefined or null it will throws an error!
             if (item[param.name] !== undefined && item[param.name] !== null) {
               return item[param.name].toString().toLowerCase() === param.filter.toString().toLowerCase();
@@ -196,14 +224,14 @@ const Querybar = (props) => {
       case 'list':
         switch (param.name) {
           case 'form_categories':
-            result = param.filter.length < 1 ? data : data.filter((d, i) => {
+            result = param.filter.length < 1 ? data : data.filter((d:any, i:number) => {
               for (let i = 0; i < d.form_categories.length; i++) {
                 return param.filter.indexOf(d.form_categories[i].name) !== -1;
               }
             });
             break;
           case 'projects':
-            result = param.filter.length < 1 ? data : data.filter(d => {
+            result = param.filter.length < 1 ? data : data.filter((d:any) => {
               if (d.project !== undefined) {
                 return param.filter.indexOf(d.project.title) !== -1;
               } else {
@@ -212,9 +240,9 @@ const Querybar = (props) => {
             });
             break;
           default:
-            result = data.filter((d) => {
+            result = data.filter((d:any) => {
               if (Array.isArray(d[param.name])) {
-                return d[param.name].some(item => param.filter.includes(item));
+                return d[param.name].some((item:any) => param.filter.includes(item));
               }
               else {
                 return param.filter.includes(d[param.name]);
@@ -225,7 +253,7 @@ const Querybar = (props) => {
         return result;
       case 'switch':
         if (param.filter.checked) {
-          result = data.filter((item) => {
+          result = data.filter((item:any) => {
             return item[param.name] === param.filter.value;
           });
           return result;
@@ -234,7 +262,7 @@ const Querybar = (props) => {
           return data;
         }
       case 'range':
-        result = data.filter((item) => {
+        result = data.filter((item:any) => {
           return item[param.name] <= param.filter.end && item[param.name] >= param.filter.start;
         });
         return result;
@@ -245,11 +273,11 @@ const Querybar = (props) => {
     //  return data;
   };
 
-  const handleSearch = (param, data) => {
+  const handleSearch = (param:string | number, data:any) => {
     let result;
     const searchString = param.toString().toLowerCase().trim();
     if (searchString !== "") {
-      result = data.filter((obj) => {
+      result = data.filter((obj:any) => {
         return Object.keys(obj).some((key) => {
           if (obj[key] !== null) {
             return obj[key].toString().toLowerCase().includes(searchString);
@@ -263,57 +291,59 @@ const Querybar = (props) => {
   };
 
   const exportData = () => {
-    const firstRow = headers.map(header => header.headerName);
-    const rows = [];
-    rows.push(firstRow);
-    for (const [key, value] of Object.entries(displayedData)) {
-      let res = [];
-      headers.map(header => {
-        if (value.hasOwnProperty(header.field)) {
-          res.push(value[header.field] !== null ? value[header.field].toString().replace(/(\r\n|\n|\r)/gm, "") : " ");
-        }
-      });
-      rows.push(res);
-    }
-
-    const fName = `${props.filename || 'data'}.csv`;
-    let csv = '';
-    for (let i = 0; i < rows.length; i++) {
-      let row = rows[i];
-      for (let j = 0; j < row.length; j++) {
-        let val = row[j] === null ? '' : row[j].toString();
-        val = val.replace(/\t/gi, " ");
-        if (j > 0)
-          csv += ';';
-        csv += val;
+    if(headers !== null) {
+      const firstRow = headers.map(header => header.headerName);
+      const rows = [];
+      rows.push(firstRow);
+      for (const [key, value] of Object.entries(displayedData)) {
+        let res: any[] = [];
+        headers.map(header => {
+          if (value.hasOwnProperty(header.field)) {
+            res.push(value[header.field] !== null ? value[header.field].toString().replace(/(\r\n|\n|\r)/gm, "") : " ");
+          }
+        });
+        rows.push(res);
       }
-      csv += '\n';
-    }
-    // for UTF-16
-    let cCode, bArr = [];
-    bArr.push(255, 254);
-    for (let i = 0; i < csv.length; ++i) {
-      cCode = csv.charCodeAt(i);
-      bArr.push(cCode & 0xff);
-      bArr.push(cCode / 256 >>> 0);
-    }
-    const blob = new Blob([new Uint8Array(bArr)], { type: 'text/csv;charset=UTF-16LE;' });
-    if (navigator.msSaveBlob) {
-      navigator.msSaveBlob(blob, fName);
-    } else {
-      let link = document.createElement("a");
-      if (link.download !== undefined) {
-        const url = window.URL.createObjectURL(blob);
-        link.setAttribute("href", url);
-        link.setAttribute("download", fName);
-        link.style.visibility = 'hidden';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        // Timeout is needed for large datasets.
-        setTimeout(function () {
-          window.URL.revokeObjectURL(url);
-        }, 0);
+  
+      const fName = `${props.filename || 'data'}.csv`;
+      let csv = '';
+      for (let i = 0; i < rows.length; i++) {
+        let row = rows[i];
+        for (let j = 0; j < row.length; j++) {
+          let val = row[j] === null ? '' : row[j].toString();
+          val = val.replace(/\t/gi, " ");
+          if (j > 0)
+            csv += ';';
+          csv += val;
+        }
+        csv += '\n';
+      }
+      // for UTF-16
+      let cCode, bArr = [];
+      bArr.push(255, 254);
+      for (let i = 0; i < csv.length; ++i) {
+        cCode = csv.charCodeAt(i);
+        bArr.push(cCode & 0xff);
+        bArr.push(cCode / 256 >>> 0);
+      }
+      const blob = new Blob([new Uint8Array(bArr)], { type: 'text/csv;charset=UTF-16LE;' });
+      if (navigator.msSaveBlob) {
+        navigator.msSaveBlob(blob, fName);
+      } else {
+        let link = document.createElement("a");
+        if (link.download !== undefined) {
+          const url = window.URL.createObjectURL(blob);
+          link.setAttribute("href", url);
+          link.setAttribute("download", fName);
+          link.style.visibility = 'hidden';
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          // Timeout is needed for large datasets.
+          setTimeout(function () {
+            window.URL.revokeObjectURL(url);
+          }, 0);
+        }
       }
     }
   };
@@ -352,7 +382,7 @@ const Querybar = (props) => {
                   <NativeSelect
                     id="demo-customized-select-native"
                     value={sort}
-                    onChange={(e) => handleQuery(e, 'sort')}
+                    onChange={(e) => handleQuery(e, "sort")}
                     input={<BootstrapInput />}
                   >
                     {
@@ -397,7 +427,7 @@ const Querybar = (props) => {
       />
       <br />
       {
-        data.length && props.showSearchResultText > 0 ?
+        showSearchResultText && data.length > 0 ?
           (
             <Typography variant="body2"><b>Visar {displayedData.length} av {data.length} projekt</b></Typography>
           ) :

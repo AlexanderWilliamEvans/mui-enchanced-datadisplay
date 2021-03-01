@@ -1,17 +1,27 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import {
   withStyles,
+  Theme,
   FormControlLabel,
-  Switch as MuiSwitch
+  Switch as MuiSwitch,
+  SwitchClassKey, 
+  SwitchProps,
+  createStyles
 }
-  from '@material-ui/core';
+  from "@material-ui/core";
+import { SwitchTypes }  from "../../../types/Switch.types";
 
 
+  interface Styles extends Partial<Record<SwitchClassKey, string>> {
+    focusVisible?: string;
+  }
+
+  interface Props extends SwitchProps {
+    classes: Styles;
+  }
 
 
-
-
-const CustomSwitch = withStyles((theme) => ({
+const CustomSwitch = withStyles((theme:Theme) => createStyles({
   root: {
     width: 42,
     height: 26,
@@ -47,7 +57,7 @@ const CustomSwitch = withStyles((theme) => ({
   },
   checked: {},
   focusVisible: {},
-}))(({ classes, ...props }) => {
+}))(({ classes, ...props }: Props) => {
   return (
     <MuiSwitch
       focusVisibleClassName={classes.focusVisible}
@@ -67,12 +77,12 @@ const CustomSwitch = withStyles((theme) => ({
 
 
 
-const Switch = (props) => {
+const Switch = (props:SwitchTypes) => {
   const [checked, setChecked] = useState(false);
   const value = props.value || null;
   const name = props.name || '';
 
-  const handleChange = (e) => {
+  const handleChange = (e:any) => {
     const query = { name, filter: { value, checked:e.target.checked }, type:'switch' };
     props.handleFilter(query, 'filter');
     setChecked(e.target.checked);

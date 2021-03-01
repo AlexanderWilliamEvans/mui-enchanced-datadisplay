@@ -27,6 +27,10 @@ const BasicExample = () => {
         return settings.data;
     };
 
+    const handleDelete = () =>{
+
+    };
+
     useEffect(() => {
         console.log(rows);
     }, [rows]);
@@ -45,6 +49,8 @@ const BasicExample = () => {
                 placeholder={placeholder}
                 useSort={settings.useSort || true} 
                 showSearchResultText={settings.showSearchResultText || true}
+                showDelete={true}
+                handleDelete={handleDelete}
                 />
             <BasicTable
                 rows={rows}

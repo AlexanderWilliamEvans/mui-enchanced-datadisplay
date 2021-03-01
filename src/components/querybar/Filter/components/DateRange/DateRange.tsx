@@ -1,23 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import { makeStyles, Typography, TextField  } from '@material-ui/core';
+import React, { useState, useEffect, ChangeEvent } from "react";
+import { makeStyles, Theme, createStyles, Typography, TextField  } from "@material-ui/core";
+import { DateRangeTypes } from "../../../types/DateRange.types";
 
-
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme:Theme) => createStyles({
     datefield: {
         margin: theme.spacing(1)
     },
 }));
 
-const DateRange = (props) => {
+const DateRange = (props:DateRangeTypes) => {
 
     const classes = useStyles();
-    const [data, setData] = useState(props.data || []);
-    const [label, setLabel ] = useState(props.label || '' );
-    const [type, setType ] = useState(props.type || 'range');
-    const [name, setName] = useState(props.name || '');
+    const type = props.type || 'range';
+    const name = props.name || '';
     const [values, setValues] = useState(props.data.values || null);
 
-    const handleTimeperiod = (e, period) => {
+    const handleTimeperiod = (e:ChangeEvent<{ value: unknown }>, period:any) => {
         let query;
         switch (period) {
             case 'start':
@@ -39,7 +37,7 @@ const DateRange = (props) => {
 
     }, []);
     return (
-        <form className={classes.datecontainer} noValidate>
+        <form noValidate>
         <Typography variant="body2">{props.title}</Typography>
         <TextField
             label="Från"
