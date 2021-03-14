@@ -47,7 +47,7 @@ const CardLink = (props) => {
       </CardActionArea>
       <CardActions>
         <Button size="small" color="primary">
-        <Link className={classes.link} to="/basicexample">
+        <Link className={classes.link} to={props.link.link}>
           Learn More
           </Link>
         </Button>

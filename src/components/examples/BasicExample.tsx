@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { makeStyles, Container, Typography } from '@material-ui/core';
 import BasicTable from '../tables/BasicTable';
-import Querybar from '../Querybar/Querybar';
+import Querybar from '../querybar/Querybar';
 import settings from './settings';
-
+import {useSelector } from 'react-redux';
+import allActions from '../../redux/actions/index';
 
 
 const placeholder = 'Search...';
@@ -20,11 +21,12 @@ const useStyles = makeStyles({
 
 const BasicExample = () => {
     const classes = useStyles();
-
-    const [rows, setRows] = useState(settings.data);
-    const [data, setData] = useState(settings.data);
+    const currentData = useSelector((state:any) => state.currentData)
+    const [rows, setRows] = useState(currentData.data);
+    const [data, setData] = useState(currentData.data);
+    debugger;
     const updateData = () => {
-        return settings.data;
+        return currentData.data;
     };
 
     const handleDelete = () =>{
@@ -42,7 +44,7 @@ const BasicExample = () => {
             <Querybar
                 headers={settings.headers}
                 sort={settings.sort}
-                data={settings.data}
+                data={data}
                 updateData={updateData}
                 filters={settings.filters}
                 setData={setRows}
@@ -53,6 +55,7 @@ const BasicExample = () => {
                 handleDelete={handleDelete}
                 />
             <BasicTable
+                headers={Object.keys(currentData.data[0])}
                 rows={rows}
                 setRows={setRows} />
         </Container>

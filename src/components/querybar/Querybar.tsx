@@ -11,6 +11,7 @@ import ButtonPanel from './ButtonPanel/ButtonPanel';
 import { QuerybarTypes } from './types/Querybar.types';
 import { IQueryObject } from './interfaces/IQueryObject';
 
+
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,

@@ -3,4 +3,5 @@ export type RangeSliderTypes = {
     type?: string;
     name: string;
     handleFilter: ((query:any, type:string)=>void);
+    useInputs?: boolean,
 };

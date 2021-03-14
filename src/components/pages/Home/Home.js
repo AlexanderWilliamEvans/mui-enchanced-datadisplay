@@ -1,6 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import {useSelector, useDispatch} from 'react-redux';
+import allActions from '../../../redux/actions/index';
 import { makeStyles, Container, Typography, Grid, Paper } from '@material-ui/core';
 import CardLink from './CardLink';
+import api from '../../../api';
 const useStyles = makeStyles((theme) => ({
     root: {
         marginTop: '3em',
@@ -52,14 +55,30 @@ const Home = () => {
     const classes = useStyles();
     const cardImg = require('./test.png').default;
     const links = [
-        { title: 'Simple Table', description: 'A simple table with filter and sort functionality', img: cardImg },
-        { title: 'Editable table', description: 'A table with standard functions and with editable rows and columns', img: cardImg},
-        { title: 'Custom mail', description: 'A table suitable for an application with custom mail functionality', img: cardImg },
-        { title: 'Advanced Table', description: 'A table with advanced sort, filter and crud functionality', img: cardImg },
-        { title:'Map application', description: 'An example on how table can be used in map applications', img: cardImg },
-        { title: 'table with statistics', description: 'A table with charts and statistical tools', img: cardImg}
+        { title: 'Simple Table', description: 'A simple table with filter and sort functionality', img: cardImg, link:"/basicexample"},
+        { title: 'Editable table', description: 'A table with standard functions and with editable rows and columns', img: cardImg, link:"/basicexample"},
+        { title: 'Custom mail', description: 'A table suitable for an application with custom mail functionality', img: cardImg, link:"/basicexample" },
+        { title: 'Advanced Table', description: 'A table with advanced sort, filter and crud functionality', img: cardImg, link:"/basicexample"},
+        { title:'Map application', description: 'An example on how table can be used in map applications', img: cardImg, link:"/basicexample" },
+        { title: 'table with statistics', description: 'A table with charts and statistical tools', img: cardImg, link:"/statisticsexample"}
     ];
+   // const data = useSelector(state => state.currentData)
 
+    const dispatch = useDispatch();
+
+    const getData = useCallback(async() => {
+        const data = await api.getData();
+        if(data) {
+            dispatch(allActions.dataActions.setData(data));
+        }
+    }, [dispatch]);
+
+    useEffect(() => {
+       
+        
+            getData();
+        
+    }, [getData]);
     return (
         <Container className={classes.container}>
             <Typography variant="h4">Exempel</Typography>

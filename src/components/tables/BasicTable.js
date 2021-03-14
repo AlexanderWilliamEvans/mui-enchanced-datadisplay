@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -14,16 +14,37 @@ const useStyles = makeStyles({
   },
 });
 
-const createData = (name, gender, state, age, born, year) => {
-  return { name, gender, state, age, born, year };
-}
-
-
 export const BasicTable = (props) => {
   const classes = useStyles();
-
+  const headers = props.headers || [];
   const [rows, setRows] = useState(props.rows || []);
 
+
+  const createRow = (row) => {
+    return (
+      <Fragment>
+        {
+          Object.keys(row).map((key, index) => {
+            if (index === 0) {
+              return (
+                <TableCell component="th" scope="row">
+                  {row[key]}
+                  </TableCell>
+              );
+            }
+            else {
+              return (
+                <TableCell align="right">
+                  {row[key]}
+                  </TableCell>
+              );
+            }
+          })
+        }
+      </Fragment>
+    );
+  };
+  
   useEffect( () => {
     if(JSON.stringify(props.rows) !== JSON.stringify(rows)) {
       const newState = JSON.parse(JSON.stringify(props.rows))
@@ -36,25 +57,32 @@ export const BasicTable = (props) => {
       <Table className={classes.table} aria-label="simple table">
         <TableHead>
           <TableRow>
-            <TableCell>Name</TableCell>
-            <TableCell align="right">Gender</TableCell>
-            <TableCell align="right">State</TableCell>
-            <TableCell align="right">Age</TableCell>
-            <TableCell align="right">Born</TableCell>
-            <TableCell align="right">Year</TableCell>
+            {
+             headers.map((header, index) => {
+              if(index === 0) {
+                return (
+                  <TableCell>
+                    {header}
+                    </TableCell>
+                  );
+              }
+              else {
+                return (
+                <TableCell align="right">
+                  {header}
+                  </TableCell>
+                );
+              }
+            })
+          }
           </TableRow>
         </TableHead>
         <TableBody>
           {rows.map((row) => (
-            <TableRow key={row.name}>
-              <TableCell component="th" scope="row">
-                {row.name}
-              </TableCell>
-              <TableCell align="right">{row.gender}</TableCell>
-              <TableCell align="right">{row.state}</TableCell>
-              <TableCell align="right">{row.age}</TableCell>
-              <TableCell align="right">{row.born}</TableCell>
-              <TableCell align="right">{row.year}</TableCell>
+            <TableRow key={JSON.stringify(row)}>
+              {
+                createRow(row)
+              }
             </TableRow>
           ))}
         </TableBody>
