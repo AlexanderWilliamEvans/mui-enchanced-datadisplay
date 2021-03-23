@@ -203,6 +203,29 @@ const Querybar = (props:QuerybarTypes) => {
 
   };
 
+  const deepSearch = (data:any, param: string, keys:any) => {
+    const result = data.filter((d:any) => {
+      let t = d;
+        if(Array.isArray(keys)) {
+      	for(let i = 0; i<keys.length; i++) {
+        if(t === undefined) {
+        console.error("Invalid key for filter object!");
+        	break;
+        }
+  			else {
+        	t = t[keys[i]];
+        }
+        }
+          return t !== undefined ? t.toString().toLowerCase() === param.toString().toLowerCase() : null;
+      }
+    else {
+    console.log(t[keys].toString().toLowerCase());
+		return t[keys].toString().toLowerCase() === param.toString().toLowerCase();
+    }
+  }
+      );
+      return result;
+  };
   const handleFilter = (param:any, data:IQueryObject) => {
     let result;
     // if (data[0].hasOwnProperty(param.name)) {
