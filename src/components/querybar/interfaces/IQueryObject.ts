@@ -1,5 +1,5 @@
 export interface IQueryObject {
-    name: string,
+    name: string | Array<string>,
     filter: any,
     type: string,
 };

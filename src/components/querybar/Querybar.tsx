@@ -11,7 +11,6 @@ import ButtonPanel from './ButtonPanel/ButtonPanel';
 import { QuerybarTypes } from './types/Querybar.types';
 import { IQueryObject } from './interfaces/IQueryObject';
 
-
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -66,7 +65,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const BootstrapInput = withStyles((theme:Theme) => createStyles({
+const BootstrapInput = withStyles((theme: Theme) => createStyles({
 
   input: {
     minWidth: '100px',
@@ -100,7 +99,7 @@ const BootstrapInput = withStyles((theme:Theme) => createStyles({
 }))(InputBase);
 
 /**
-     * Summary: A querybar for search, filter and CRUD-operations in a given data.
+     * Summary: A querybar for search, filter and CRUD-operations for a given data.
      *
      * Description. (use period)
      *
@@ -111,7 +110,7 @@ const BootstrapInput = withStyles((theme:Theme) => createStyles({
      * @augments   Parent
      * @mixes      mixin
      *
-     * @alias    realName
+     * @alias    Querybar
      * @memberof namespace
      *
      * @see   Function/class relied on
@@ -124,7 +123,7 @@ const BootstrapInput = withStyles((theme:Theme) => createStyles({
      * @param {type}   attributes.key One of the model's options.
      */
 
-const Querybar = (props:QuerybarTypes) => {
+const Querybar = (props: QuerybarTypes) => {
 
   const classes = useStyles();
   const data = props.data || [];
@@ -132,14 +131,14 @@ const Querybar = (props:QuerybarTypes) => {
   const showSearchResultText = props.showSearchResultText || false;
   const [displayedData, setDisplayedData] = useState(props.data || []);
   const displayedDataRef = useRef<any[]>([]);
-  const [dataQuery, setDataQuery] = useState([]);
-  const [filter, setFilter] = useState([]);
-  const [sort, setSort] = useState('sortera');
+  const [dataQuery, setDataQuery] = useState<any>([]);
+  const [filter, setFilter] = useState<any>([]);
+  const [sort, setSort] = useState<string>('sortera');
   const sortOptions = props.sort || [];
-  const [search, setSearch] = useState('');
-  const [collapseFilter, setCollapseFilter] = useState(false);
+  const [search, setSearch] = useState<string>('');
+  const [collapseFilter, setCollapseFilter] = useState<boolean>(false);
 
-  const handleQuery = (e:any, type:string) => {
+  const handleQuery = (e: any, type: string) => {
     const query = e.target !== undefined ? e.target.value : e;
     let test = JSON.parse(JSON.stringify(data));
     if (data.length > 0) {
@@ -169,27 +168,26 @@ const Querybar = (props:QuerybarTypes) => {
     }
 
   };
-
-  const handleSort = (param:any, data:Array<any>) => {
+  const handleSort = (param: any, data: Array<any>) => {
     let result;
     if (data[0].hasOwnProperty(param.key)) {
       switch (param.type.toLowerCase()) {
         case 'string':
-          result = data.sort((a:any, b:any) => {
+          result = data.sort((a: any, b: any) => {
             return a[param.key].localeCompare(b[param.key], 'sv', { ignorePunctuation: true })
           });
           result = param.order.toLowerCase() === 'asc' ? result : result.reverse();
           setSort(param);
           return result;
         case 'int':
-          result = data.sort((a:any, b:any) => {
+          result = data.sort((a: any, b: any) => {
             return a[param.key] - b[param.key];
           });
           result = param.order.toLowerCase() === 'asc' ? result : result.reverse();
           setSort(param);
           return result;
         case 'date':
-          result = data.sort((a:any, b:any) => {
+          result = data.sort((a: any, b: any) => {
             return new Date(a[param.key]).getTime() - new Date(b[param.key]).getTime();
           });
           result = param.order.toLowerCase() === 'asc' ? result : result.reverse();
@@ -203,30 +201,59 @@ const Querybar = (props:QuerybarTypes) => {
 
   };
 
-  const deepSearch = (data:any, param: string, keys:any) => {
-    const result = data.filter((d:any) => {
-      let t = d;
-        if(Array.isArray(keys)) {
-      	for(let i = 0; i<keys.length; i++) {
-        if(t === undefined) {
-        console.error("Invalid key for filter object!");
-        	break;
-        }
-  			else {
-        	t = t[keys[i]];
-        }
-        }
-          return t !== undefined ? t.toString().toLowerCase() === param.toString().toLowerCase() : null;
-      }
-    else {
-    console.log(t[keys].toString().toLowerCase());
-		return t[keys].toString().toLowerCase() === param.toString().toLowerCase();
+  // Search through a nested object for a key with an array of objects as values.
+  const nestedArraySearch = (object: any, keys: Array<string>) => {
+    let target = object;
+    for (let i = 0; i < keys.length; i++) {
+
     }
-  }
-      );
-      return result;
+    return target;
   };
-  const handleFilter = (param:any, data:IQueryObject) => {
+
+  // Filter dynamically through nested data with keys.
+  const nestedFilter = (object: any, keys: Array<string>, filter: string | Array<string>) => {
+    let target = object;
+    for (var i = 0; i < keys.length; i++) {
+      if (target.hasOwnProperty(keys[i])) {
+        target = target[keys[i]];
+       /* if (Array.isArray(target)) {
+          i = i+1;
+          // Check if the Array contains objects.
+          if(target.some(t => t.hasOwnProperty(keys[i]))) {
+            target = target.filter((t) => {
+              return t.hasOwnProperty(keys[i]);
+            });
+            if (target.length < 1) {
+              target = null;
+              break;
+            }
+          }
+          else {
+            break;
+          }
+        }*/
+      }
+      else {
+        target = null;
+        console.warn("Undefined keys are set for the filter object!");
+        break;
+      }
+    }
+    if (target !== undefined && target !== null) {
+      if (Array.isArray(target)) {
+        return target.some((item: any) => filter.includes(item));
+      }
+      else {
+        return filter.includes(target);
+      }
+    }
+    else {
+      return false;
+    }
+
+  };
+
+  const handleFilter = (param: any, data: IQueryObject) => {
     let result;
     // if (data[0].hasOwnProperty(param.name)) {
     switch (param.type) {
@@ -235,41 +262,43 @@ const Querybar = (props:QuerybarTypes) => {
           result = data;
         }
         else {
-          result = data.filter((item:any) => {
-            // If item[param.name] is undefined or null it will throws an error!
-            if (item[param.name] !== undefined && item[param.name] !== null) {
-              return item[param.name].toString().toLowerCase() === param.filter.toString().toLowerCase();
-            } else {
-              return false;
+          result = data.filter((item: any) => {
+            if (Array.isArray(param.name)) {
+              return nestedFilter(item, param.name, param.filter);
+            }
+            else {
+              // If item[param.name] is undefined or null it will throws an error!
+              if (item[param.name] !== undefined && item[param.name] !== null) {
+                return item[param.name].toString().toLowerCase() === param.filter.toString().toLowerCase();
+              } else {
+                return false;
+              }
             }
           });
         }
         return result;
       case 'list':
         switch (param.name) {
-          case 'form_categories':
-            result = param.filter.length < 1 ? data : data.filter((d:any, i:number) => {
-              for (let i = 0; i < d.form_categories.length; i++) {
-                return param.filter.indexOf(d.form_categories[i].name) !== -1;
-              }
-            });
-            break;
-          case 'projects':
-            result = param.filter.length < 1 ? data : data.filter((d:any) => {
-              if (d.project !== undefined) {
-                return param.filter.indexOf(d.project.title) !== -1;
-              } else {
-                return false;
-              }
-            });
-            break;
+           case 'form_categories':
+             result = param.filter.length < 1 ? data : data.filter((d: any, i: number) => {
+               for (let i = 0; i < d.form_categories.length; i++) {
+                 return param.filter.indexOf(d.form_categories[i].name) !== -1;
+               }
+             });
+             break;
           default:
-            result = data.filter((d:any) => {
-              if (Array.isArray(d[param.name])) {
-                return d[param.name].some((item:any) => param.filter.includes(item));
+            result = data.filter((d: any) => {
+              // If the key for the searched value is nested. 
+              if (Array.isArray(param.name)) {
+                return nestedFilter(d, param.name, param.filter);
               }
               else {
-                return param.filter.includes(d[param.name]);
+                if (Array.isArray(d[param.name])) {
+                  return d[param.name].some((item: any) => param.filter.includes(item));
+                }
+                else {
+                  return param.filter.includes(d[param.name]);
+                }
               }
             });
             break;
@@ -277,8 +306,13 @@ const Querybar = (props:QuerybarTypes) => {
         return result;
       case 'switch':
         if (param.filter.checked) {
-          result = data.filter((item:any) => {
-            return item[param.name] === param.filter.value;
+          result = data.filter((item: any) => {
+            if (Array.isArray(param.name)) {
+              return nestedFilter(item, param.name, param.filter);
+            }
+            else {
+              return item[param.name] === param.filter.value;
+            }
           });
           return result;
         }
@@ -286,7 +320,7 @@ const Querybar = (props:QuerybarTypes) => {
           return data;
         }
       case 'range':
-        result = data.filter((item:any) => {
+        result = data.filter((item: any) => {
           return item[param.name] <= param.filter.end && item[param.name] >= param.filter.start;
         });
         return result;
@@ -297,11 +331,11 @@ const Querybar = (props:QuerybarTypes) => {
     //  return data;
   };
 
-  const handleSearch = (param:string | number, data:any) => {
+  const handleSearch = (param: string | number, data: any) => {
     let result;
     const searchString = param.toString().toLowerCase().trim();
     if (searchString !== "") {
-      result = data.filter((obj:any) => {
+      result = data.filter((obj: any) => {
         return Object.keys(obj).some((key) => {
           if (obj[key] !== null) {
             return obj[key].toString().toLowerCase().includes(searchString);
@@ -315,7 +349,7 @@ const Querybar = (props:QuerybarTypes) => {
   };
 
   const exportData = () => {
-    if(headers !== null) {
+    if (headers !== null) {
       const firstRow = headers.map(header => header.headerName);
       const rows = [];
       rows.push(firstRow);
@@ -328,7 +362,7 @@ const Querybar = (props:QuerybarTypes) => {
         });
         rows.push(res);
       }
-  
+
       const fName = `${props.filename || 'data'}.csv`;
       let csv = '';
       for (let i = 0; i < rows.length; i++) {
@@ -438,7 +472,7 @@ const Querybar = (props:QuerybarTypes) => {
           </Toolbar>
         </AppBar>
         <Collapse in={collapseFilter}>
-          <FilterMenu handleQuery={handleQuery} authors={props.authors} date={props.date} filters={props.filters} />
+          <FilterMenu handleQuery={handleQuery} date={props.date} filters={props.filters} />
         </Collapse>
       </div>
       <br />

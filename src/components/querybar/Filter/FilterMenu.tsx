@@ -57,11 +57,36 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 interface IActiveFilter {
-    name: string,
+    name: string | Array<string>,
     type: string,
     filter: any,
 };
-
+/**
+ * 
+     * Summary: Filtermenu component for the querybar.
+     *
+     * Description. (use period)
+     *
+     * @since      x.x.x
+     * @access     private
+     *
+     * @constructs namespace.Class
+     * @augments   Parent 
+     * @mixes      mixin
+     *
+     * @alias    FilterMenu
+     * @memberof namespace
+     *
+     * @see   Function/class relied on
+     * @link  URL
+     * @fires Class#eventName
+     *
+     * @param {Object} props     The model's attributes.
+     * @param {type}   attributes.key One of the model's attributes.
+     * @param {Object} [options]      The model's options.
+     * @param {type}   attributes.key One of the model's options.
+     * @returns A filtermenu component with various of filters.
+ */
 const FilterMenu = (props:FilterMenuTypes) => {
     const classes = useStyles();
     const filters = props.filters || [];
@@ -70,7 +95,14 @@ const FilterMenu = (props:FilterMenuTypes) => {
 
     const handleFilter = (filter:Array<IActiveFilter> | any) => {
         let newState = [...activeFilters];
-        const index = newState.findIndex(x => x.name === filter.name);
+        const index = newState.findIndex(x => { 
+            if(Array.isArray(filter.name) && Array.isArray(x.name)) {
+                return  x.name.join() === filter.name.join();
+            }
+            else {
+              return  x.name === filter.name;
+            }
+        });
         if (index !== -1) {
             newState[index] = filter;
         } else {

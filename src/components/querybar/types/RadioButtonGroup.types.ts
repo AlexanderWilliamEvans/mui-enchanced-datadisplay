@@ -4,6 +4,6 @@ export type RadioButtonGroupTypes = {
 label?: string;
 type?: string;
 data: any;
-name: string;
+name: string | Array<string>;
 handleFilter: ((query:any, type:string)=>void);
 };
