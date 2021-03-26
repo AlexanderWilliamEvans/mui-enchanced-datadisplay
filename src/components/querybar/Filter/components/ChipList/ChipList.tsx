@@ -86,7 +86,7 @@ const ChipList = (props: ChipListTypes) => {
         props.handleFilter(query, 'filter');
     };
 
-    const removeChip = (e:any, removed: any) => {
+    const removeChip = (e:any, removed: string | number) => {
         let newState = selectedValues.filter((selected) => {
             return selected !== removed;
         });
@@ -118,9 +118,9 @@ const ChipList = (props: ChipListTypes) => {
                                 key={value}
                                 label={value}
                                 className={classes.chip}
-                                clickable
+                                clickable ={true}
                                 color="primary"
-                                onDelete={value !== "" ? undefined : (e) => removeChip(e, value)}
+                               onDelete={(e) => removeChip(e, value)}
                                 onMouseDown={(event) => {
                                     event.stopPropagation();
                                 }}
