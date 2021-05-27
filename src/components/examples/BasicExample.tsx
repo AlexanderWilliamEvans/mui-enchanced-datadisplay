@@ -55,6 +55,7 @@ const BasicExample = () => {
                 handleDelete={handleDelete}
                 />
             <BasicTable
+                title={"name"}
                 headers={Object.keys(currentData.data[0])}
                 rows={rows}
                 setRows={setRows} />
