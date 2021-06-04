@@ -30,25 +30,14 @@ const headers = [
     { field: "year", headerName: "År" }
 ];
 const filters = [
-    { name: 'gender', key: 'gender', label: 'Kön', type: 'radio', data: {values:[{value:'male', label: 'Male'}, {value: 'female', label: 'Female'}, {value: 'other', label: 'Other'}]} },
+    { name: 'status', key: 'status', label: 'status', type: 'radio', data: {values:[{value:'Presumed dead', label: 'Presumed dead'}, {value: 'Alive', label: 'Alive'}, {value: "Deceased", label: "Deceased"}]} },
     { name: 'age', key: 'age', label: 'Ålder', type: 'range', data: {values: [1, 100]}},
-    { name: 'year', key: 'year', label: 'År', type: 'range', data: {values: [1950, 2030]}},
-    { name: 'born', key: 'born', label: 'Födelsedatum', type: 'dateRange', data: {values: {start:'1940-01-21', end: '2021-01-20'}}},
-    {name: 'state', key: 'state', label: 'Stat', type: 'chip', data: {values:[
-        'Delaware', 
-        'Nebraska', 
-        'Nevada', 
-        'New Hampshire', 
-        'New Jersey', 
-        'Maryland',
-        'Oregon', 
-        'Pennsylvania', 
-        'Rhode Island',
-        'Arkansas', 
-        'Louisiana', 
-        'Maine', 
-        'Maryland', 
-        'Kentucky']
+    { name: "appearance", key: "appearance", label: "Appearance", type: 'range', data: {values: [0, 10000]}},
+    { name: 'birthday', key: 'birthday', label: 'birthday', type: 'dateRange', data: {values: {start:'1900-01-21', end: '2021-01-20'}}},
+    {name: 'category', key: 'category', label: 'Category', type: 'chip', data: {values:[
+       "Breaking bad",
+        "Better Call Saul",
+    ]
     } }
    // {name: 'Active', key:'active', label: 'Aktiv', type: 'switch', data:{}}
   //  { name: 'Categories', label: 'Kategorier', type: 'select', values: [] }

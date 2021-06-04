@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React from 'react';
 import {
     makeStyles,
     Grid,
@@ -14,6 +14,7 @@ import DateRange from './components/DateRange/DateRange';
 import Switch from './components/Switch/Switch';
 import ChipList from './components/ChipList/ChipList';
 import { FilterMenuTypes } from '../types/FilterMenu.types';
+import HieracialChipList from './components/ChipList/Hierarchical';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -57,10 +58,16 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 interface IActiveFilter {
-    name: string | Array<string>,
-    type: string,
-    filter: any,
+    name: string | Array<string>;
+    type: string;
+    filter: any;
 };
+
+interface filterKeys {
+    name: Array<string>;
+    type: string;
+    filter: any;
+}
 /**
  * 
      * Summary: Filtermenu component for the querybar.
@@ -85,28 +92,71 @@ interface IActiveFilter {
      * @param {type}   attributes.key One of the model's attributes.
      * @param {Object} [options]      The model's options.
      * @param {type}   attributes.key One of the model's options.
-     * @returns A filtermenu component with various of filters.
+     * @returns A filtermenu component with various types of filters.
  */
-const FilterMenu = (props:FilterMenuTypes) => {
+const FilterMenu = (props: FilterMenuTypes) => {
     const classes = useStyles();
     const filters = props.filters || [];
-    const [activeFilters, setActiveFilters] = useState<IActiveFilter[]>([]);
-    const activeFilterRef = useRef(activeFilters);
+    const [activeFilters, setActiveFilters] = React.useState<IActiveFilter[]>([]);
+    const activeFilterRef = React.useRef(activeFilters);
 
-    const handleFilter = (filter:Array<IActiveFilter> | any) => {
+    const removeFilter = (filterKeys: Array<any>) => {        
+        let newState = JSON.parse(JSON.stringify(activeFilters));
+        for (let i = 0; i < filterKeys.length; i++) {
+            const filterKey = Array.isArray(filterKeys[i].name) ? filterKeys[i].name.join() : filterKeys[i].name;
+
+            const index = newState.findIndex((item: any) => {
+                const currentFilter = Array.isArray(item.name) ? item.name.join() : item.name;
+                return currentFilter === filterKey;
+            });
+            if (index !== -1) {
+                newState.splice(index, 1);
+            }
+
+        }
+        setActiveFilters(newState);
+    };
+
+    const handleFilter = (filter: Array<IActiveFilter> | any) => {
         let newState = [...activeFilters];
-        const index = newState.findIndex(x => { 
-            if(Array.isArray(filter.name) && Array.isArray(x.name)) {
-                return  x.name.join() === filter.name.join();
+        if (Array.isArray(filter)) {
+            for (let i = 0; i < filter.length; i++) {
+                const index = newState.findIndex(x => {
+                    if (Array.isArray(filter[i].name) && Array.isArray(x.name)) {
+                        return x.name.join() === filter[i].name.join();
+                    }
+                    else {
+                        return x.name === filter[i].name;
+                    }
+                });
+                if (index !== -1) {
+                    if (filter[i].filter.length > 0) {
+                        newState[index] = filter[i];
+                    }
+                } else {
+                    if (filter[i].filter.length > 0) {
+                        newState.push(filter[i]);
+                    }
+                    else {
+                        newState = newState.splice(index, 1);
+                    }
+                }
             }
-            else {
-              return  x.name === filter.name;
+        }
+        else {
+            const index = newState.findIndex(x => {
+                if (Array.isArray(filter.name) && Array.isArray(x.name)) {
+                    return x.name.join() === filter.name.join();
+                }
+                else {
+                    return x.name === filter.name;
+                }
+            });
+            if (index !== -1) {
+                newState[index] = filter;
+            } else {
+                newState.push(filter);
             }
-        });
-        if (index !== -1) {
-            newState[index] = filter;
-        } else {
-            newState.push(filter);
         }
         setActiveFilters(newState);
     };
@@ -116,11 +166,11 @@ const FilterMenu = (props:FilterMenuTypes) => {
     };
 
 
-    const handleQuery = useCallback(() => {
+    const handleQuery = React.useCallback(() => {
         props.handleQuery(activeFilters, "filter");
     }, [props, activeFilters]);
 
-    useEffect(() => {
+    React.useEffect(() => {
 
         if (JSON.stringify(activeFilterRef.current) !== JSON.stringify(activeFilters)) {
             handleQuery();
@@ -145,7 +195,13 @@ const FilterMenu = (props:FilterMenuTypes) => {
                 {
                     filters.length > 0 ? filters.map((filter, index) => {
                         switch (filter.type) {
-                            case 'radio':
+                            case "hierachical":
+                                return (
+                                    <React.Fragment key={`${filter.name}-${index}`}>
+                                        <HieracialChipList name={filter.name} type={filter.type} data={filter.data} handleFilter={handleFilter} removeFilter={removeFilter} />
+                                    </React.Fragment>
+                                )
+                            case "radio":
                                 return (
                                     <Grid key={`${filter.name}-${index}`} item xs={filter.width || 4} className={classes.gridItem}>
                                         <FormLabel component="legend">{filter.label}</FormLabel>
@@ -153,7 +209,7 @@ const FilterMenu = (props:FilterMenuTypes) => {
                                         <RadioButtonGroup name={filter.name} data={filter.data} handleFilter={handleFilter} />
                                     </Grid>
                                 )
-                            case 'range':
+                            case "range":
                                 return (
                                     <Grid key={`${filter.name}-${index}`} item xs={filter.width || 4} className={classes.gridItem}>
                                         <FormLabel component="legend">{filter.label}</FormLabel>
@@ -161,7 +217,7 @@ const FilterMenu = (props:FilterMenuTypes) => {
                                         <RangeSlider name={filter.name} type={filter.type} data={filter.data} handleFilter={handleFilter} />
                                     </Grid>
                                 );
-                            case 'dateRange':
+                            case "dateRange":
                                 return (
                                     <Grid key={`${filter.name}-${index}`} item xs={filter.width || 4} className={classes.gridItem}>
                                         <FormLabel component="legend">{filter.label}</FormLabel>
@@ -169,15 +225,15 @@ const FilterMenu = (props:FilterMenuTypes) => {
                                         <DateRange name={filter.name} data={filter.data} handleFilter={handleFilter} />
                                     </Grid>
                                 );
-                            case 'chip':
+                            case "chip":
                                 return (
                                     <Grid key={`${filter.name}-${index}`} item xs={filter.width || 4} className={classes.gridItem}>
                                         <FormLabel component="legend">{filter.label}</FormLabel>
                                         <Divider />
                                         <ChipList name={filter.name} type={filter.type} data={filter.data} handleFilter={handleFilter} />
                                     </Grid>
-                                );
-                            case 'switch':
+                                )
+                            case "switch":
                                 return (
                                     <Grid key={`${filter.name}-${index}`} item xs={filter.width || 4} className={classes.gridItem}>
                                         <FormLabel component="legend">{filter.label}</FormLabel>
