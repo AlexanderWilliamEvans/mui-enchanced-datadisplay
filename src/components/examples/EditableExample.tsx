@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { makeStyles, Container, Typography } from '@material-ui/core';
-import Table from "../tables/index";
+import EditableTable from '../tables/EditableTable';
 import Querybar from '../querybar/Querybar';
 import settings from './settings';
 import {useSelector } from 'react-redux';
@@ -22,9 +22,8 @@ const useStyles = makeStyles({
 const BasicExample = () => {
     const classes = useStyles();
     const currentData = useSelector((state:any) => state.currentData)
-    const [rows, setRows] = React.useState(currentData.data);
-    const [data, setData] = React.useState(currentData.data);
-    const headers = Object.keys(currentData.data[0]);
+    const [rows, setRows] = useState(currentData.data);
+    const [data, setData] = useState(currentData.data);
     debugger;
     const updateData = () => {
         return currentData.data;
@@ -34,13 +33,13 @@ const BasicExample = () => {
 
     };
 
-    React.useEffect(() => {
+    useEffect(() => {
         console.log(rows);
     }, [rows]);
 
     return (
         <Container className={classes.container}>
-            <Typography>A Simple Example</Typography>
+            <Typography>Editable Example</Typography>
             <br />
             <Querybar
                 headers={settings.headers}
@@ -55,11 +54,11 @@ const BasicExample = () => {
                 showDelete={true}
                 handleDelete={handleDelete}
                 />
-            <Table
-                title={"name"}
-                headers={headers}
-                data={rows}
-                updateData={setRows} />
+           <EditableTable
+             title={"name"}
+             headers={Object.keys(currentData.data[0])}
+             rows={rows}
+           />
         </Container>
     );
 

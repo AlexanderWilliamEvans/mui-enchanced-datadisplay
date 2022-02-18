@@ -11,7 +11,6 @@ import {
    Paper,
    Avatar,
   } from '@material-ui/core';
-import Details from "./assets/Dialogs/Details";
 
 const useStyles = makeStyles({
   table: {
@@ -26,7 +25,16 @@ const useStyles = makeStyles({
   }
 });
 
-export const BasicTable = (props) => {
+type basicTableProps = {
+  rows: Array<any>;
+  setRows?: (rows:Array<any>) => void;
+  title: string;
+  headers: any;
+  editable?: boolean;
+  showDetails: (row:any, title?: string) => void;
+};
+
+const BasicTable:React.FC<basicTableProps> = (props) => {
   const classes = useStyles();
   const headers = props.headers || [];
   const [rows, setRows] = useState(props.rows || []);
@@ -34,10 +42,10 @@ export const BasicTable = (props) => {
   const title = props.title;
   const [details, showDetails] = React.useState(false);
 
-  const testImage = (url, timeoutT) => {
+ /* const testImage = (url:string, timeoutT:number) => {
     return new Promise(function (resolve, reject) {
-      var timeout = timeoutT || 5000;
-      var timer, img = new Image();
+      const timeout = timeoutT || 5000;
+      const timer, img = new Image();
       img.onerror = img.onabort = function () {
         clearTimeout(timer);
         reject("error");
@@ -54,9 +62,9 @@ export const BasicTable = (props) => {
       }, timeout);
       img.src = url;
     });
-  }
+  }*/
 
-  const isValidHttpUrl = (string) => {
+  const isValidHttpUrl = (string:string) => {
     let url;
 
     try {
@@ -68,19 +76,18 @@ export const BasicTable = (props) => {
 
   };
 
-  const testURL = (str) => {    
+  const testURL = (str:string) => {    
   const result = String(str).match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g);
   return result !== null;
   };
 
 
 
-  const createRow = (row) => {
+  const createRow = (row:any)=> {
     return (
       <Fragment>
         {
           Object.keys(row).map((key, index) => {
-            console.log(key);
             const isUrl = testURL(row[key]);
             debugger;
             if (index === 0) {
@@ -102,11 +109,9 @@ export const BasicTable = (props) => {
       </Fragment>
     );
   };
-  const handleDetails = (row: any) => {
-    debugger;
-    setSelectedRow(row);
-    showDetails(true);
-  };
+  React.useEffect(() => {
+
+  }, []);
 
   useEffect(() => {
     if (JSON.stringify(props.rows) !== JSON.stringify(rows)) {
@@ -117,12 +122,12 @@ export const BasicTable = (props) => {
 
   return (
     <React.Fragment>
-      <TableContainer component={Paper} className={classes.container}>
+      <TableContainer component={Paper}>
         <Table className={classes.table} aria-label="simple table">
           <TableHead>
             <TableRow>
               {
-                headers.map((header, index) => {
+                headers.map((header:string, index:number) => {
                   if (index === 0) {
                     return (
                       <TableCell>
@@ -142,8 +147,8 @@ export const BasicTable = (props) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row) => (
-              <TableRow key={JSON.stringify(row)} onClick={() => handleDetails(row)} className={classes.tableRow}>
+            {rows.map((row:any) => (
+              <TableRow key={JSON.stringify(row)} onClick={() => props.showDetails(row, row.title)} className={classes.tableRow}>
                 {
                   createRow(row)
                 }
@@ -152,15 +157,6 @@ export const BasicTable = (props) => {
           </TableBody>
         </Table>
       </TableContainer>
-      {
-        details ?
-          (<Details
-            title={selectedRow[title]}
-            data={selectedRow}
-            setOpen={showDetails}
-          />)
-          : (null)
-      }
     </React.Fragment>
   );
 };

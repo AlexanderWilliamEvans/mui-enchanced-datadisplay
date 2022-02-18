@@ -1,10 +1,14 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React from 'react';
 import {useSelector, useDispatch} from 'react-redux';
 import allActions from '../../../redux/actions/index';
-import { makeStyles, Container, Typography, Grid, Paper } from '@material-ui/core';
+import { makeStyles, Theme, Container, Typography, Grid } from '@material-ui/core';
 import CardLink from './CardLink';
 import api from '../../../api';
-const useStyles = makeStyles((theme) => ({
+import { RootState } from "../../../redux/reducers/index";
+import Settings from "./settings.json";
+import "./style.css";
+
+const useStyles = makeStyles((theme:Theme) => ({
     root: {
         marginTop: '3em',
         backgroundColor: 'white',
@@ -56,28 +60,27 @@ const Home = () => {
     const cardImg = require('./test.png').default;
     const links = [
         { title: 'Simple Table', description: 'A simple table with filter and sort functionality', img: cardImg, link:"/basicexample"},
-        { title: 'Editable table', description: 'A table with standard functions and with editable rows and columns', img: cardImg, link:"/basicexample"},
+        { title: 'Editable table', description: 'A table with standard functions and with editable rows and columns', img: cardImg, link:"/EditableExample"},
         { title: 'Custom mail', description: 'A table suitable for an application with custom mail functionality', img: cardImg, link:"/basicexample" },
-        { title: 'Advanced Table', description: 'A table with advanced sort, filter and crud functionality', img: cardImg, link:"/basicexample"},
+        { title: 'Draggable Table', description: 'A draggable table with crud functionality', img: cardImg, link:"/draggableexample"},
         { title:'Map application', description: 'An example on how table can be used in map applications', img: cardImg, link:"/basicexample" },
         { title: 'table with statistics', description: 'A table with charts and statistical tools', img: cardImg, link:"/statisticsexample"}
     ];
-   // const data = useSelector(state => state.currentData)
+   const data = useSelector((state:RootState) => { 
+       return state.currentData; 
+    });
 
     const dispatch = useDispatch();
 
-    const getData = useCallback(async() => {
+    const getData = React.useCallback(async() => {
         const data = await api.getData();
         if(data) {
             dispatch(allActions.dataActions.setData(data));
         }
     }, [dispatch]);
 
-    useEffect(() => {
-       
-        
-            getData();
-        
+    React.useEffect(() => {       
+        getData();
     }, [getData]);
     return (
         <Container className={classes.container}>

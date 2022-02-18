@@ -54,7 +54,22 @@ const data = [
   }
 ];
 
-export const Simple = (props:any) => {
+
+type statisticsDataObject = {
+  dataKey: string | number;
+  data: string | number | Array<string | number>;
+}
+
+type basicStatisticsTypes = {
+  label?: string | number;
+  data: Array<statisticsDataObject>
+};
+
+/**
+ * A basic barchart with Material UI and Recharts.
+ *  @param {Object} props 
+ */
+export const BasicBarChart = (props:basicStatisticsTypes) => {
   return (
     <BarChart
       width={500}
@@ -77,3 +92,5 @@ export const Simple = (props:any) => {
     </BarChart>
   );
 };
+
+export default BasicBarChart;

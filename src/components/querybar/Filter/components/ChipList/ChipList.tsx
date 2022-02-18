@@ -11,7 +11,7 @@ import {
     Select,
     createStyles
 } from '@material-ui/core';
-import { ChipListTypes } from "../../../types/ChipList.types";
+import { regularChipListProps as ChipListTypes } from "../../../types/ChipList.types";
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
     chipformControl: {

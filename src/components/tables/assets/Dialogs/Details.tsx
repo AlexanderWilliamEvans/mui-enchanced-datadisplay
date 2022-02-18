@@ -18,9 +18,11 @@ import {
   Tooltip,
   IconButton,
   Avatar,
+  TextField
 } from "@material-ui/core";
 import CloseIcon from '@material-ui/icons/Close';
 import EditIcon from '@material-ui/icons/Edit';
+import SaveIcon from '@material-ui/icons/Save';
 import DoneIcon from '@material-ui/icons/Done';
 import Draggable from "react-draggable";
 import functions from "../../functions";
@@ -54,7 +56,7 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-interface details {
+type detailProps = {
   data: Array<string | number>;
   title?: string | number;
   setOpen: (open: boolean) => void;
@@ -68,11 +70,11 @@ function PaperComponent(props: PaperProps) {
   );
 }
 
-const Details = (props: details) => {
+const Details: React.FC <detailProps> = (props) => {
   const classes = useStyles();
 
   const [editMode, setEditMode] = React.useState<boolean>(false);
-  const values = Object.values(props.data) || [];
+  const [values, setValues] = React.useState(Object.values(props.data) || []);
   const keys = Object.keys(props.data) || [];
   const handleClose = () => {
     props.setOpen(false);
@@ -80,6 +82,10 @@ const Details = (props: details) => {
   const handleEdit = () => {
     setEditMode(!editMode);
   };
+
+  React.useEffect(() => {
+
+  }, [editMode]);
 
   return (
     <div>
@@ -92,7 +98,7 @@ const Details = (props: details) => {
         transitionDuration={500}
       >
         <DialogTitle style={{ cursor: 'move' }} id="draggable-dialog-title">
-          { props.title || "Details" }
+          {props.title || "Details"}
           <Tooltip title="Close">
             <IconButton color="primary" aria-label="close detail dialog" component="span" className={classes.closeButton} onClick={handleClose}>
               <CloseIcon />
@@ -110,7 +116,14 @@ const Details = (props: details) => {
                       <b>{keys[i]}</b>
                     </TableCell>
                     <TableCell align="right">
-                      {!functions.isValidUrl(String(value)) ? value : <Avatar alt={value} src={value} className={classes.avatar} />}
+                      {
+                        editMode ?
+                          (<TextField defaultValue={value} />) : (
+                            <React.Fragment>
+                              {!functions.isValidUrl(String(value)) ? value : <Avatar alt={value} src={value} className={classes.avatar} />}
+                            </React.Fragment>
+                          )
+                      }
                     </TableCell>
                   </TableRow>
                 ))}
@@ -119,11 +132,22 @@ const Details = (props: details) => {
           </TableContainer>
         </DialogContent>
         <DialogActions>
-          <IconButton color="primary" onClick={() => handleEdit()}>
-            {
-              editMode ? (<DoneIcon />) : (<EditIcon />)
-            }
-          </IconButton>
+          {
+            editMode ? (
+              <React.Fragment>
+                <IconButton color="primary" onClick={() => handleEdit()}>
+                  <DoneIcon />
+                </IconButton>
+                <IconButton color="primary" onClick={() => handleEdit()}>
+                  <SaveIcon />
+                </IconButton>
+              </React.Fragment>
+            ) : (
+              <IconButton color="primary" onClick={() => handleEdit()}>
+                <EditIcon />
+              </IconButton>
+            )
+          }
         </DialogActions>
       </Dialog>
     </div>

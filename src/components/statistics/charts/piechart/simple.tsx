@@ -1,14 +1,8 @@
+import { Divider, Typography } from "@material-ui/core";
 import React, { useCallback, useState } from "react";
 import { PieChart, Pie, Cell } from "recharts";
+import { basicStatisticsTypes } from "../../types/types";
 
-const data = [
-  { name: "Group A", value: 400 },
-  { name: "Group B", value: 300 },
-  { name: "Group C", value: 300 },
-  { name: "Group D", value: 200 }
-];
-
-const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
 const RADIAN = Math.PI / 180;
 const renderCustomizedLabel = ({
@@ -36,23 +30,32 @@ const renderCustomizedLabel = ({
     </text>
   );
 };
-export const Simple = (props:any) => {
+
+export const BasicPieChart = (props: basicStatisticsTypes) => {
+
+  const [ data, setData ] = React.useState<any>(props.data || []);
+  debugger;
   return (
-    <PieChart width={400} height={400}>
-      <Pie
-        data={data}
-        cx={200}
-        cy={200}
-        labelLine={false}
-        label={renderCustomizedLabel}
-        outerRadius={80}
-        fill="#8884d8"
-        dataKey="value"
-      >
-        {data.map((entry, index) => (
-          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-        ))}
-      </Pie>
-    </PieChart>
+    <React.Fragment>
+      <Typography variant="h5">{props.label || ""}</Typography>
+      <Divider />
+      <PieChart width={400} height={400}>
+        <Pie
+          data={data}
+          cx={200}
+          cy={200}
+          labelLine={false}
+          label={renderCustomizedLabel}
+          outerRadius={80}
+          fill="#8884d8"
+          dataKey="value"
+        >
+          {data.map((entry:any, index:number) => (
+            <Cell key={`cell-${index}`} fill={entry.color} />
+          ))}
+        </Pie>
+      </PieChart>
+    </React.Fragment>
   );
 };
+export default BasicPieChart;

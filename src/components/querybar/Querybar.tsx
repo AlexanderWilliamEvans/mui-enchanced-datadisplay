@@ -331,22 +331,36 @@ const Querybar = (props: QuerybarTypes) => {
     //  return data;
   };
 
-  const handleSearch = (param: string | number, data: any) => {
-    let result;
-    const searchString = param.toString().toLowerCase().trim();
-    if (searchString !== "") {
-      result = data.filter((obj: any) => {
+ // {searchParams: [{key: [title], placeholder: "sök på titel"}, {key: [section, text, purpose], placeholder: "sök på avsnitt"}]}
+ const handleSearch = (param: string | number, data: any) => {
+  let result;
+  const searchString = param.toString().toLowerCase().trim();
+  if (searchString !== "") {
+    result = data.filter((obj: any) => {
+      // Find matched value for specific property.
+      if (props.searchKey !== undefined) {
+        let val = obj;
+        for (let i =0; i < props.searchKey.length; i++) {
+          val = val[props.searchKey[i]];
+        }
+        return val.toString().toLowerCase().includes(searchString);
+      }
+      // Find matched value within whole object.
+      else {
         return Object.keys(obj).some((key) => {
           if (obj[key] !== null) {
             return obj[key].toString().toLowerCase().includes(searchString);
+          } else {
+            return false;
           }
-        })
-      });
-      setSearch(searchString);
-      return result;
-    }
-    return data;
-  };
+        });
+      }
+    });
+    setSearch(searchString);
+    return result;
+  }
+  return data;
+};
 
   const exportData = () => {
     if (headers !== null) {

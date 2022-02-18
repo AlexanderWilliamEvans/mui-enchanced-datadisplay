@@ -1,10 +1,10 @@
-import React, { Fragment, useState, useEffect } from 'react';
-import { AppBar, makeStyles, Button, IconButton, Toolbar, Typography, MenuItem, Menu } from '@material-ui/core';
-import MenuIcon from '@material-ui/icons/Menu';
+import React  from "react";
+import { AppBar, makeStyles, Button, IconButton, Toolbar, Typography, MenuItem, Menu } from "@material-ui/core";
+import MenuIcon from "@material-ui/icons/Menu";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
-import Router from './Router';
+import Router from "./Router";
 import { Link, BrowserRouter } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
@@ -32,10 +32,9 @@ const Navbar = () => {
 
   const classes = useStyles();
 
-  const [loggedIn, setLoggedIn] = useState(true);
-  const [user, setUser] = useState('alev');
-  // const [open, setOpen] = useRecoilState(Atoms.settingsDrawerOpen);
-  const [anchorEl, setAnchorEl] = useState(null);
+  const [loggedIn, setLoggedIn] = React.useState<boolean>(true);
+  const [user, setUser] = React.useState<any>(null);
+  const [anchorEl, setAnchorEl] = React.useState(null);
 
   const visible = Boolean(anchorEl);
 
@@ -52,7 +51,7 @@ const Navbar = () => {
     //  setUser({ user: "", token: "", authenticated: false });
   };
 
-  const handleExpandClick = (e) => {
+  const handleExpandClick = (e:any) => {
     setAnchorEl(e.currentTarget);
   };
 
@@ -60,13 +59,13 @@ const Navbar = () => {
     setAnchorEl(null);
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
 
   }, []);
 
   return (
     <BrowserRouter>
-      <Fragment>
+      <React.Fragment>
         {
           loggedIn ? (
             <div className={classes.root}>
@@ -91,7 +90,7 @@ const Navbar = () => {
                       startIcon={<AccountCircle />}
                       endIcon={<ArrowDropDownIcon />}
                     >
-                      {user.username}
+                      test
                     </Button>
                     <Menu
                       id="menu-appbar"
@@ -136,7 +135,7 @@ const Navbar = () => {
             (null)
         }
         <Router />
-      </Fragment>
+      </React.Fragment>
     </BrowserRouter>
 
   );
